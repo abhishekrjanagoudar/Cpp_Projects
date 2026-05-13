@@ -7,7 +7,7 @@ using namespace std;
 // Main program
 int main (void)
 {
-    cout << "<last name>, <first name>, <matr.nb.>" << endl << endl;
+    cout << "<Janagoudar>, <Abhishek>, <1134273>" << endl << endl;
     
     extern void allTests();
     allTests();
