@@ -5,6 +5,13 @@
 **/Release/
 **/x64/
 **/x86/
+**/html/
+
+# Eclipse project metadata
+**/.project
+**/.cproject
+**/.settings/
+**/.gdbinit
 
 # C/C++ build artifacts
 *.o

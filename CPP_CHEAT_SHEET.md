@@ -24,31 +24,158 @@ public:
 
 ## 2. Constructors
 
+**Constructor:** A special member function that is automatically called when an object is created. Used to initialize objects.
+
+**Syntax**
 ```cpp
-// Default constructor
-MyClass() { value = 0; }
+class ClassName {
+public:
+    ClassName() {
+        // initialization
+    }
+};
+```
 
-// Parameterized constructor
-MyClass(int v) { value = v; }
+### Types of Constructors
 
-// Initializer list (preferred)
-MyClass(int v) : value(v) { }
+**1. Default Constructor**
+No parameters.
+
+**Syntax**
+```cpp
+ClassName() {}
+```
+
+**Example**
+```cpp
+class Car {
+public:
+    Car() {
+        cout << "Car created";
+    }
+};
+```
+
+**2. Parameterized Constructor**
+Takes parameters.
+
+**Syntax**
+```cpp
+ClassName(dataType value) {}
+```
+
+**Example**
+```cpp
+class Car {
+public:
+    int speed;
+
+    Car(int s) {
+        speed = s;
+    }
+};
+```
+
+**3. Copy Constructor**
+Creates object by copying another object.
+
+**Syntax**
+```cpp
+ClassName(const ClassName &obj) {}
+```
+
+**Example**
+```cpp
+class Car {
+public:
+    int speed;
+
+    Car(int s) {
+        speed = s;
+    }
+
+    Car(const Car &c) {
+        speed = c.speed;
+    }
+};
 ```
 
 ---
 
 ## 3. Pointers
 
-```cpp
-int x = 42;
-int* ptr = &x;          // & = address-of
-cout << *ptr;           // * = dereference
+**Pointer:** A pointer stores the memory address of another variable.
 
+**Syntax**
+```cpp
+dataType *pointerName;
+```
+
+**Example**
+```cpp
+int x = 10;
+int *ptr = &x;
+
+cout << x;      // 10
+cout << &x;     // address of x
+cout << ptr;    // address of x
+cout << *ptr;   // value at address = 10
+```
+
+**Important Symbols**
+
+| Symbol | Meaning |
+|--------|---------|
+| `&`    | Address of variable |
+| `*`    | Value at address (dereference) |
+
+**Pointer with Arrays**
+```cpp
+int arr[3] = {1,2,3};
+
+int *ptr = arr;
+
+cout << *ptr;      // 1
+cout << *(ptr+1);  // 2
+```
+
+**Object Pointers (Dynamic Memory)**
+```cpp
 MyClass* obj = new MyClass();
 obj->getValue();        // -> for pointers
 delete obj;             // Free memory
 obj = nullptr;
 ```
+
+**The `this` Pointer**
+`this` is a special pointer that stores the address of the current object. Used inside class member functions.
+
+**Syntax**
+```cpp
+this->variableName
+```
+
+**Example**
+```cpp
+class Student {
+public:
+    int age;
+
+    Student(int age) {
+        this->age = age;  // Left age - Class Age , Right age - Parameterized
+    }
+
+    void display() {
+        cout << this->age;
+    }
+};
+```
+
+**Key Points**
+- Pointer stores address
+- `*ptr` &rarr; value
+- `&x` &rarr; address
+- Used in dynamic memory, arrays, functions, OOPs
 
 ---
 
@@ -256,3 +383,168 @@ while (std::getline(in, line)) { }
 | Map | `std::map<K, V> m;` |
 | Throw | `throw std::exception();` |
 | Try-Catch | `try { } catch { }` |
+
+---
+
+## 16. Lab 1 Syntax Additions
+
+### Virtual and Override
+```cpp
+class Base {
+public:
+    virtual void print() = 0;
+    virtual ~Base() = default;
+};
+
+class Derived : public Base {
+public:
+    void print() override;
+};
+```
+
+### Rule of Three / Five
+```cpp
+class Example {
+public:
+    Example();
+    Example(const Example& other);
+    Example(Example&& other);
+    Example& operator=(const Example& other);
+    Example& operator=(Example&& other);
+    ~Example();
+};
+```
+
+### Arrays and Loops
+```cpp
+for (int row = 0; row < 8; ++row) {
+    for (int col = 0; col < 8; ++col) {
+    }
+}
+
+for (int index = size - 1; index >= 0; --index) {
+}
+```
+
+### References and `this`
+```cpp
+void setValue(const std::string& value) {
+    this->value = value;
+}
+```
+
+---
+
+## 17. Lab 2 Syntax Additions
+
+### Value Types
+```cpp
+class GridPosition {
+public:
+    GridPosition(char row, int column);
+    char getRow() const;
+    int getColumn() const;
+    bool operator==(const GridPosition& other) const;
+};
+```
+
+### Enum and Switch
+```cpp
+enum Impact { NONE, HIT, SUNKEN };
+
+switch (impact) {
+case NONE:
+    break;
+case HIT:
+    break;
+case SUNKEN:
+    break;
+}
+```
+
+### Set and Map Usage
+```cpp
+std::set<GridPosition> positions;
+std::map<GridPosition, Shot> shots;
+
+positions.insert(GridPosition('A', 1));
+shots[GridPosition('A', 1)] = Shot(GridPosition('A', 1), HIT);
+```
+
+### STL Algorithms
+```cpp
+std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), result.begin());
+std::includes(container.begin(), container.end(), subset.begin(), subset.end());
+```
+
+### Range-Based Loop
+```cpp
+for (const auto& ship : ships) {
+}
+```
+
+---
+
+## 18. Lab 3 Syntax Additions
+
+### Abstract Base Class
+```cpp
+class Course {
+public:
+    virtual ~Course() = 0;
+    virtual void write(std::ostringstream& os) const = 0;
+    virtual void read(std::istringstream& is) = 0;
+    virtual std::string getCourseDetail() const = 0;
+};
+```
+
+### Inheritance with Constructors
+```cpp
+class WeeklyCourse : public Course {
+public:
+    WeeklyCourse(unsigned int courseKey, std::string title, std::string major,
+                 float creditPoints, Poco::DateTime::DaysOfWeek dayOfWeek,
+                 Poco::Data::Time startTime, Poco::Data::Time endTime);
+};
+```
+
+### Smart Pointers and Factory Style Creation
+```cpp
+std::unique_ptr<Course> course = std::make_unique<WeeklyCourse>(101, "Title", "Major", 3.0,
+                                                                Poco::DateTime::DaysOfWeek::MONDAY,
+                                                                Poco::Data::Time(9, 0, 0),
+                                                                Poco::Data::Time(11, 0, 0));
+```
+
+### Serialization With Streams
+```cpp
+std::ostringstream os;
+std::istringstream is(text);
+
+os << value << ';' << otherValue;
+getline(is, token, ';');
+```
+
+### Move Syntax
+```cpp
+Course other(std::move(course));
+```
+
+### Static Cast and Enum Conversion
+```cpp
+Poco::DateTime::DaysOfWeek day = static_cast<Poco::DateTime::DaysOfWeek>(dayNo);
+```
+
+### Map and Unique Pointer Access
+```cpp
+auto& courseMap = database.getCourses();
+auto& studentMap = database.getStudents();
+
+courseMap[101] = std::make_unique<BlockCourse>(101, "Title", "Major", 4.0,
+                                               Poco::Data::Date(2025, 1, 1),
+                                               Poco::Data::Date(2025, 2, 1),
+                                               Poco::Data::Time(8, 0, 0),
+                                               Poco::Data::Time(10, 0, 0));
+```
+
+---
