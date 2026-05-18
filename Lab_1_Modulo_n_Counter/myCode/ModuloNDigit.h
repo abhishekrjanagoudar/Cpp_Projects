@@ -1,24 +1,25 @@
+	/* ModuloNDigit.h - short notes and quick exam hints */
+
 #ifndef MODULONDIGIT_H_
 #define MODULONDIGIT_H_
 
-// One digit stores its current value and the base it counts in.
+	// ModuloNDigit: single digit counter that wraps at `rangeN`.
+	// Syntax note: member initialization and default values (C++11): `int countValue = 0;`.
+	// Exam hint: incrementCounter demonstrates modular arithmetic and wrap-around logic.
 class ModuloNDigit
 {
 public:
-	// Public data keeps the example simple and easy to inspect.
 	int countValue = 0;
 	int rangeN;
 
-	// Default constructor creates an empty digit with zero values.
+	// Constructors/Destructors: initialize and cleanup
 	ModuloNDigit();
-	// This constructor sets the base for one modulo digit.
-	ModuloNDigit(int maxRange);
-	// No dynamic memory is used, so the destructor is empty.
+	ModuloNDigit(int maxRange); // set upper bound for wrap-around
 	~ModuloNDigit();
 
-	// Adds one and wraps back to zero when the base is reached.
+	// incrementCounter: increases value and returns true if wrapped to 0
 	bool incrementCounter();
-	// Prints only the value, without a newline.
+	// printCounter: prints current value (logic kept simple for exams)
 	void printCounter();
 };
 

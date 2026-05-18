@@ -1,25 +1,27 @@
+/* TemperatureSensor.h - short notes (no STL used) */
+
 #ifndef TEMPERATURESENSOR_H_
 #define TEMPERATURESENSOR_H_
 
 #include "PowerManagement.h"
 
-// Sensor component reads the environment temperature.
+// TemperatureSensor: reads current temperature; shows pointer use
 class TemperatureSensor
 {
 public:
-    // Public state keeps the class easy to inspect in diagrams.
+    // Current temperature
     float currentTemperature;
 
-    // Pointer lets the sensor share the same power-management object.
+    // Pointer to PowerManagement
     PowerManagement *powerManager;
 
-    // Constructor links the sensor to shared power management.
+    // Constructor: set pointer and init temperature
     TemperatureSensor(PowerManagement *powerManager);
 
-    // Destructor is empty because nothing is dynamically allocated.
+    // Destructor
     ~TemperatureSensor();
 
-    // Getter returns the stored reading.
+    // Return current temperature (simple accessor)
     float getCurrentTemperature();
 };
 

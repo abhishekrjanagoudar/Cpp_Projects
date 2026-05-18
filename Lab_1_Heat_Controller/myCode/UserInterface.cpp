@@ -1,25 +1,27 @@
+/* UserInterface.cpp - implementation (short notes) */
+
 #include "UserInterface.h"
 
+// Constructor: store pointer and init temps
 UserInterface::UserInterface(PowerManagement *powerManager)
 {
-    // Store the shared dependency and reset the values.
     this->powerManager = powerManager;
     this->currentTemperature = 0;
     this->temperatureSetByUser = 0;
 }
 
+// Destructor
 UserInterface::~UserInterface()
 {
-    // No cleanup needed.
 }
 
-// Simple setter for the measured temperature.
+// Set current temperature (assignment)
 void UserInterface::setCurrentTemperature(float currentTemperature)
 {
     this->currentTemperature = currentTemperature;
 }
 
-// Simple setter for the target temperature.
+// Set desired temperature from UI
 void UserInterface::setTemperatureSetByUser(float temperatureSetByUser)
 {
     this->temperatureSetByUser = temperatureSetByUser;

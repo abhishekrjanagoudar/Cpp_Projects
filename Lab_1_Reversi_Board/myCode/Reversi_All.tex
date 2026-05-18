@@ -1,0 +1,474 @@
+% Reversi_All.tex - Combined source listing for Lab_1_Reversi_Board/myCode
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{hyperref}
+
+% Color scheme
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{commentcolor}{RGB}{0,120,0}
+\definecolor{stringcolor}{RGB}{180,0,0}
+\definecolor{bg}{RGB}{248,248,248}
+
+\lstset{
+  backgroundcolor=\color{bg},
+  language=C++,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{kwcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  stepnumber=1,
+  numbersep=8pt,
+  tabsize=4,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  captionpos=b
+}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE Reversi - Combined Source Listing}
+  \\[6pt]
+    % file list removed per request
+\end{center}
+\vspace{1pt}
+
+\section*{ReversiBoard.h}
+\begin{lstlisting}
+/* ReversiBoard.h - header (short notes) */
+
+#ifndef REVERSIBOARD_H_
+#define REVERSIBOARD_H_
+
+// FieldState: enum to represent a cell's contents (BLACK, WHITE, BLANK)
+// Exam note: enums are integer-like named constants; easier to read than raw ints.
+enum FieldState
+{
+	BLACK, ///< Represents a black piece.
+	WHITE, ///< Represents a white piece.
+	BLANK  ///< Represents an empty field.
+};
+
+// ReversiBoard: holds 8x8 board. OOP: groups data + methods.
+class ReversiBoard
+{
+private:
+	// No private members
+
+public:
+	// 2D array representing the board with 8x8 fields.
+	FieldState board[8][8];
+
+	// Constructor: sets up initial board pieces.
+	// Constructor/Destructor note: constructors initialize objects; destructors
+	// free resources (none needed here).
+	ReversiBoard();
+
+	// Destructor (no special cleanup required for this simple class).
+	~ReversiBoard();
+
+	// Returns the state of the cell at (column, row).
+	// Important: parameters are (column, row) — check order when calling.
+	FieldState getFieldState(int column, int row);
+
+	// Attempts to place `piece` at (column, row). Returns true if legal move
+	// and flips opponent pieces accordingly. Uses loops and conditionals.
+	// Exam note: this function demonstrates bounds checks, loops, and
+	// modifying a 2D array (board).
+	bool setFieldState(int column, int row, FieldState piece);
+
+};
+
+#endif /* REVERSIBOARD_H_ */
+\end{lstlisting}
+
+\section*{ReversiBoard.cpp}
+\begin{lstlisting}
+/* ReversiBoard.cpp
+ * Simple implementation notes and exam hints added near important lines.
+ * Learning: shows loops, conditionals, array access, and basic OOP usage.
+ */
+
+#include <iostream>
+#include "ReversiBoard.h"
+
+// Constructor: initialize board cells and place starting pieces.
+// Syntax note: nested loops used to initialize 2D array.
+ReversiBoard::ReversiBoard()
+{
+    // Initialize all fields to BLANK (looping over columns and rows).
+    for (int column = 0; column < 8; column++)
+    {
+        for (int row = 0; row < 8; row++)
+        {
+            board[column][row] = FieldState::BLANK; // array access: board[c][r]
+        }
+    }
+
+    // Starting position: center pieces (indices 3 and 4)
+    board[3][3] = BLACK;
+    board[4][4] = BLACK;
+    board[3][4] = WHITE;
+    board[4][3] = WHITE;
+}
+
+// Destructor: no dynamic memory, so left empty.
+ReversiBoard::~ReversiBoard() {}
+
+// Returns state at (column,row)
+FieldState ReversiBoard::getFieldState(int column, int row)
+{
+    return board[column][row];
+}
+
+// Place piece and flip opponent pieces; returns true if legal
+bool ReversiBoard::setFieldState(int column, int row, FieldState piece)
+{
+    // If cell is not empty, move is invalid.
+    if (getFieldState(column, row) != BLANK)
+    {
+        return false; // condition check example
+    }
+
+    bool isAllowedToPlace = false; // flag set to true when a valid flip is found
+
+    // EAST: move right from placed piece
+    for (int col = column + 1; col < 8; col++)
+    {
+        if (getFieldState(col, row) == BLANK) // empty -> no flanking
+            break;
+
+        if (getFieldState(col, row) == piece)
+        {
+            if (col == column + 1) // adjacent same-color piece -> nothing to flip
+                break;
+
+            // Flip pieces between `column` and `col` (inclusive of boundaries)
+            for (int j = column; j < col; j++)
+            {
+                board[j][row] = piece; // array write
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // WEST
+    for (int col = column - 1; col >= 0; col--)
+    {
+        if (getFieldState(col, row) == BLANK)
+            break;
+
+        if (getFieldState(col, row) == piece)
+        {
+            if (col == column - 1)
+                break;
+
+            for (int j = column; j > col; j--)
+            {
+                board[j][row] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // SOUTH
+    for (int row1 = row + 1; row1 < 8; row1++)
+    {
+        if (getFieldState(column, row1) == BLANK)
+            break;
+
+        if (getFieldState(column, row1) == piece)
+        {
+            if (row1 == row + 1)
+                break;
+
+            for (int j = row; j < row1; j++)
+            {
+                board[column][j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // NORTH
+    for (int row1 = row - 1; row1 >= 0; row1--)
+    {
+        if (getFieldState(column, row1) == BLANK)
+            break;
+
+        if (getFieldState(column, row1) == piece)
+        {
+            if (row1 == row - 1)
+                break;
+
+            for (int j = row; j > row1; j--)
+            {
+                board[column][j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // NORTH-EAST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break; // safety check for indices
+
+        if (getFieldState(column + i, row - i) == BLANK)
+            break;
+
+        if (getFieldState(column + i, row - i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column + j][row - j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // NORTH-WEST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break;
+
+        if (getFieldState(column - i, row - i) == BLANK)
+            break;
+
+        if (getFieldState(column - i, row - i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column - j][row - j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // SOUTH-EAST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break;
+
+        if (getFieldState(column + i, row + i) == BLANK)
+            break;
+
+        if (getFieldState(column + i, row + i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column + j][row + j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // SOUTH-WEST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break;
+
+        if (getFieldState(column - i, row + i) == BLANK)
+            break;
+
+        if (getFieldState(column - i, row + i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column - j][row + j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // If any direction produced flips, place the new piece.
+    if (isAllowedToPlace)
+    {
+        board[column][row] = piece;
+    }
+
+    return isAllowedToPlace; // function returns boolean result
+}
+\end{lstlisting}
+
+\section*{ReversiConsoleView.h}
+\begin{lstlisting}
+/* ReversiConsoleView.h
+ * Simple notes: console view for printing the board.
+ * Learning: demonstrates pointer member to another object (ReversiBoard*).
+ */
+
+#ifndef REVERSICONSOLEVIEW_H_
+#define REVERSICONSOLEVIEW_H_
+
+#include "ReversiBoard.h"
+
+// ReversiConsoleView: prints the board to the console.
+// Pointer note: stores `ReversiBoard *reversiBoard` — shows simple pointer use.
+class ReversiConsoleView
+{
+private:
+	/// Pointer to the ReversiBoard object to be displayed.
+	ReversiBoard *reversiBoard;
+
+public:
+	// Constructor: takes pointer to a ReversiBoard to display.
+	// Exam note: passing pointer avoids copying the whole board; caller owns board.
+	ReversiConsoleView(ReversiBoard *reversiBoard);
+
+	// Destructor: no ownership cleanup here (does not delete the board pointer).
+	~ReversiConsoleView();
+
+	// Prints board to console using simple characters (O/X/+).
+	// Loops and conditionals demo: iterates rows/columns and branches on state.
+	void print();
+};
+
+#endif /* REVERSICONSOLEVIEW_H_ */
+\end{lstlisting}
+
+\section*{ReversiConsoleView.cpp}
+\begin{lstlisting}
+/* ReversiConsoleView.cpp
+ * Simple implementation notes and exam hints added for printing logic.
+ * Shows pointer member access and basic I/O with std::cout/std::cin.
+ */
+
+#include <iostream>
+#include "ReversiConsoleView.h"
+#include "ReversiBoard.h"
+
+using namespace std;
+
+// Constructor: store pointer to board
+ReversiConsoleView::ReversiConsoleView(ReversiBoard *reversiBoard)
+{
+	this->reversiBoard = reversiBoard; // pointer assignment
+}
+
+// Destructor: nothing to free
+ReversiConsoleView::~ReversiConsoleView() {}
+
+// Print board: nested loops, map enum->symbol
+void ReversiConsoleView::print()
+{
+	cout << " 0  1  2  3  4  5  6  7 " << endl; // column headers
+
+	for (int row = 0; row < 8; row++)
+	{
+		for (int column = 0; column < 8; column++)
+		{
+			// Map FieldState to symbol: exam-friendly shorthand
+			if (reversiBoard->board[column][row] == WHITE)
+			{
+				cout << " O "; // WHITE -> O (circle)
+			}
+			else if (reversiBoard->board[column][row] == BLACK)
+			{
+				cout << " X "; // BLACK -> X (cross)
+			}
+			else
+			{
+				cout << " + "; // BLANK -> + (empty)
+			}
+
+			if (column == 7)
+				cout << endl << endl; // new line after each row
+		}
+	}
+}
+\end{lstlisting}
+
+\section*{main.cpp}
+\begin{lstlisting}
+/* main.cpp - simple runner */
+
+#include <iostream>
+#include <cstdlib>
+#include "ReversiBoard.h"
+#include "ReversiConsoleView.h"
+
+using namespace std;
+
+int main()
+{
+	// Disable output buffering so console updates appear immediately.
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+    // Create board and console view (pass pointer)
+	ReversiBoard myBoard;
+	ReversiConsoleView myConsoleView(&myBoard); // pass pointer to avoid copying
+
+	int column, row;
+    bool isWhitesTurn = true; // whose turn
+
+    // Main game loop
+	do
+	{
+		if (isWhitesTurn)
+		{
+			myConsoleView.print();
+			cout << "White's Turn" << endl;
+			cout << "Enter Column: ";
+            cin >> column; // input
+			cout << "Enter Row: ";
+			cin >> row;
+
+			// If move valid, swap turn (example of function call and boolean result)
+			if (myBoard.setFieldState(column, row, WHITE))
+			{
+				isWhitesTurn = false; // switch player
+			}
+		}
+		else
+		{
+			myConsoleView.print();
+			cout << "Black's Turn" << endl;
+			cout << "Enter Column: ";
+			cin >> column;
+			cout << "Enter Row: ";
+			cin >> row;
+
+			if (myBoard.setFieldState(column, row, BLACK))
+			{
+				isWhitesTurn = true;
+			}
+		}
+    } while (true); // Infinite loop (no end condition here)
+
+	return 0;
+}
+\end{lstlisting}
+
+\end{document}

@@ -1,21 +1,25 @@
+/* PowerManagement.h - short notes */
+
 #ifndef POWERMANAGEMENT_H_
 #define POWERMANAGEMENT_H_
 
-// Shared power component used by all other subsystems.
+// PowerManagement: holds voltage/current and power state
 class PowerManagement
 {
 public:
-    // Public state keeps the learning example direct and easy to inspect.
+    // System voltage (V)
     int voltage;
 
+    // System current (A)
     int current;
 
+    // Power system on/off flag
     bool isPowerSystemOn;
 
-    // Constructor sets the operating values.
+    // Constructor: set voltage and current
     PowerManagement(int vol, int cur);
 
-    // Destructor is empty because no resources are owned.
+    // Destructor
     ~PowerManagement();
 };
 

@@ -1,5 +1,11 @@
+/* main.cpp
+ * Simple main for running the Reversi console game.
+ * Learning notes: shows object construction, passing pointer to view,
+ * input with `cin`, and a basic game loop with conditionals.
+ */
+
 #include <iostream>
-#include <cstdio>
+#include <cstdlib>
 #include "ReversiBoard.h"
 #include "ReversiConsoleView.h"
 
@@ -7,49 +13,50 @@ using namespace std;
 
 int main()
 {
-	// Disable buffering so prompts appear immediately in the console.
+	// Disable output buffering so console updates appear immediately.
 	setvbuf(stdout, NULL, _IONBF, 0);
 
+	// Create board (automatic storage) and pass its address to the view.
+	// OOP note: constructing `myBoard` calls its constructor automatically.
 	ReversiBoard myBoard;
-	ReversiConsoleView myConsoleView(&myBoard);
+	ReversiConsoleView myConsoleView(&myBoard); // pass pointer to avoid copying
 
-	int column;
-	int row;
-	bool isWhitesTurn = true;
+	int column, row;
+	bool isWhitesTurn = true; // boolean flag to track whose turn it is
 
-	// Keep reading moves until the user stops input or the stream fails.
-	while (cin)
+	// Main game loop: demonstrates `do { } while` and conditional branching.
+	do
 	{
-		// Redraw the board before every move.
-		myConsoleView.print();
-
-		// The turn switch is a simple boolean flip.
-		cout << (isWhitesTurn ? "White's Turn" : "Black's Turn") << endl;
-
-		cout << "Enter column: ";
-		if (!(cin >> column))
+		if (isWhitesTurn)
 		{
-			break;
-		}
+			myConsoleView.print();
+			cout << "White's Turn" << endl;
+			cout << "Enter Column: ";
+			cin >> column; // input: beware invalid input in exams
+			cout << "Enter Row: ";
+			cin >> row;
 
-		cout << "Enter row: ";
-		if (!(cin >> row))
-		{
-			break;
-		}
-
-		// The board decides whether the move is legal.
-		if (myBoard.setFieldState(column, row, isWhitesTurn ? WHITE : BLACK))
-		{
-			// Toggle the turn only after a successful move.
-			isWhitesTurn = !isWhitesTurn;
+			// If move valid, swap turn (example of function call and boolean result)
+			if (myBoard.setFieldState(column, row, WHITE))
+			{
+				isWhitesTurn = false; // switch player
+			}
 		}
 		else
 		{
-			// Invalid moves are rejected and the same player tries again.
-			cout << "Invalid move. Try again." << endl;
+			myConsoleView.print();
+			cout << "Black's Turn" << endl;
+			cout << "Enter Column: ";
+			cin >> column;
+			cout << "Enter Row: ";
+			cin >> row;
+
+			if (myBoard.setFieldState(column, row, BLACK))
+			{
+				isWhitesTurn = true;
+			}
 		}
-	}
+	} while (true); // Infinite loop: exam note -> usually you'd check for game end
 
 	return 0;
 }

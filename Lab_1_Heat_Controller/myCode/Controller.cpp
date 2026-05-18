@@ -1,19 +1,21 @@
+/* Controller.cpp - implementation (short notes) */
+
 #include "Controller.h"
 
+// Constructor: initialize member variables
 Controller::Controller()
 {
-    // Start from a neutral state.
-    this->currentTemp = 0;
-    this->tempSetByUser = 0;
+    this->currentTemp = 0; // default current temperature
+    this->tempSetByUser = 0; // default desired temperature
 }
 
+// Destructor: no dynamic resources to free
 Controller::~Controller()
 {
-    // No heap memory is owned here.
 }
 
+// Setter: update the desired temperature (simple function, shows `this->`)
 void Controller::setTempSetByUser(int value)
 {
-    // Simple setter: update the stored target value.
-    this->tempSetByUser = value;
+    this->tempSetByUser = value; // assignment to member variable
 }

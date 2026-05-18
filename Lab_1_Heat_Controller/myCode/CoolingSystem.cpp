@@ -1,18 +1,20 @@
+/* CoolingSystem.cpp - implementation (short notes) */
+
 #include "CoolingSystem.h"
 
+// Constructor: store pointer and init cooler value
 CoolingSystem::CoolingSystem(PowerManagement *powerManager)
 {
-    // Store the shared dependency and start from zero.
     this->powerManager = powerManager;
     this->coolerValue = 0;
 }
 
+// Destructor
 CoolingSystem::~CoolingSystem()
 {
-    // Nothing to clean up.
 }
 
-// Simple setter that stores the new cooler temperature.
+// Set cooler temperature
 void CoolingSystem::setCoolerTemperature(int value)
 {
     coolerValue = value;

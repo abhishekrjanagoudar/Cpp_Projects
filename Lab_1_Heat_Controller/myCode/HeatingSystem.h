@@ -1,25 +1,27 @@
+/* HeatingSystem.h - short notes */
+
 #ifndef HEATINGSYSTEM_H_
 #define HEATINGSYSTEM_H_
 
 #include "PowerManagement.h"
 
-// HeatingSystem stores the heater state for the example.
+// HeatingSystem: controls heater; uses PowerManagement pointer.
 class HeatingSystem
 {
 public:
-    // Public data keeps the class easy to inspect in diagrams.
+    // Heater temperature (Celsius)
     float heaterTemperature;
 
-    // Constructor links the heater to the shared power manager.
+    // Constructor: accept pointer to PowerManagement
     HeatingSystem(PowerManagement *powerManager);
 
-    // Pointer to the shared power-management object.
+    // Pointer to PowerManagement (shows pointer usage)
     PowerManagement *powerManager;
 
-    // No cleanup needed.
+    // Destructor
     ~HeatingSystem();
 
-    // Setter stores the requested heater temperature.
+    // Set heater temperature (simple setter)
     void setHeaterTemperature(int value);
 };
 

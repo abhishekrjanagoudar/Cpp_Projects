@@ -1,25 +1,27 @@
+/* Thermostat.h - short notes */
+
 #ifndef THERMOSTAT_H_
 #define THERMOSTAT_H_
 
 #include "PowerManagement.h"
 
-// Thermostat stores the temperature requested by the user.
+// Thermostat: stores user-set temperature; provides accessor
 class Thermostat
 {
 public:
-    // Public state keeps the example easy to read.
+    // User-set temperature
     float temperatureSetByUser;
 
-    // Pointer to the shared power-management object.
+    // Pointer to PowerManagement
     PowerManagement *powerManager;
 
-    // Constructor links the thermostat to the power manager.
+    // Constructor: init and store power manager pointer
     Thermostat(PowerManagement *powerManager);
 
-    // No cleanup needed.
+    // Destructor
     ~Thermostat();
 
-    // Getter returns the stored value.
+    // Return user-set temperature (note: spelling kept as in code)
     float getTempratureSetByUser();
 };
 

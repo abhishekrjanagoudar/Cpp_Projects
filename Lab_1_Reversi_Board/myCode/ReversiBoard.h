@@ -1,34 +1,48 @@
+/* ReversiBoard.h
+ * Simple notes: header for ReversiBoard class and board state.
+ * Learning notes: shows enums, basic class layout, public array member.
+ */
+
 #ifndef REVERSIBOARD_H_
 #define REVERSIBOARD_H_
 
-// Simple enum: each field is either black, white, or blank.
+// FieldState: enum to represent a cell's contents (BLACK, WHITE, BLANK)
+// Exam note: enums are integer-like named constants; easier to read than raw ints.
 enum FieldState
 {
-	BLACK,
-	WHITE,
-	BLANK
+	BLACK, ///< Represents a black piece.
+	WHITE, ///< Represents a white piece.
+	BLANK  ///< Represents an empty field.
 };
 
-// ReversiBoard stores the board state and applies the Reversi rules.
+// ReversiBoard: holds an 8x8 board and methods to read/write fields.
+// OOP note: this class groups data (`board`) and functions (`getFieldState`,
+// `setFieldState`) that operate on that data.
 class ReversiBoard
 {
 private:
-	// No private data is needed; the board is stored directly below.
+	// No private members
 
 public:
-	// Public 2D array keeps the example easy to read and print.
+	// 2D array representing the board with 8x8 fields.
 	FieldState board[8][8];
 
-	// Constructor sets the initial four stones on the board.
+	// Constructor: sets up initial board pieces.
+	// Constructor/Destructor note: constructors initialize objects; destructors
+	// free resources (none needed here).
 	ReversiBoard();
 
-	// Destructor is empty because we do not allocate dynamic memory here.
+	// Destructor (no special cleanup required for this simple class).
 	~ReversiBoard();
 
-	// Reads one field without changing the board.
+	// Returns the state of the cell at (column, row).
+	// Important: parameters are (column, row) — check order when calling.
 	FieldState getFieldState(int column, int row);
 
-	// Tries to place a stone and flips opponent stones if the move is valid.
+	// Attempts to place `piece` at (column, row). Returns true if legal move
+	// and flips opponent pieces accordingly. Uses loops and conditionals.
+	// Exam note: this function demonstrates bounds checks, loops, and
+	// modifying a 2D array (board).
 	bool setFieldState(int column, int row, FieldState piece);
 
 };

@@ -1,20 +1,22 @@
+/* TemperatureSensor.cpp - implementation (short notes) */
+
 #include "TemperatureSensor.h"
 #include "PowerManagement.h"
 
+// Constructor: store pointer and init temperature
 TemperatureSensor::TemperatureSensor(PowerManagement *powerManager)
 {
-    // Store the shared dependency through a pointer.
     this->powerManager = powerManager;
     this->currentTemperature = 0;
 }
 
+// Destructor
 TemperatureSensor::~TemperatureSensor()
 {
-    // No manual cleanup is necessary.
 }
 
+// Return current temperature
 float TemperatureSensor::getCurrentTemperature()
 {
-    // Return the cached reading.
     return currentTemperature;
 }

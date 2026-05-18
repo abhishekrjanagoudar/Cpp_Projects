@@ -1,25 +1,27 @@
+/* CoolingSystem.h - short notes */
+
 #ifndef COOLINGSYSTEM_H_
 #define COOLINGSYSTEM_H_
 
 #include "PowerManagement.h"
 
-// CoolingSystem stores the cooler state for the example.
+// CoolingSystem: controls cooler; holds pointer to PowerManagement
 class CoolingSystem
 {
 public:
-    // Public data keeps the class easy to inspect in diagrams.
+    // Cooler temperature (Celsius)
     float coolerValue;
 
-    // Pointer to the shared power-management object.
+    // Pointer to PowerManagement
     PowerManagement *powerManager;
 
-    // Constructor links the cooler to the shared power manager.
+    // Constructor: accept pointer to PowerManagement
     CoolingSystem(PowerManagement *powerManager);
 
-    // No cleanup needed.
+    // Destructor
     ~CoolingSystem();
 
-    // Setter stores the requested cooler temperature.
+    // Set cooler temperature
     void setCoolerTemperature(int value);
 };
 

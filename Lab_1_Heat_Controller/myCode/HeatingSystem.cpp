@@ -1,19 +1,21 @@
+/* HeatingSystem.cpp - implementation (short notes) */
+
 #include "HeatingSystem.h"
 #include "PowerManagement.h"
 
+// Constructor: store pointer and init temperature
 HeatingSystem::HeatingSystem(PowerManagement *powerManager)
 {
-    // Store the shared dependency and start from zero.
-    this->powerManager = powerManager;
-    this->heaterTemperature = 0;
+    this->powerManager = powerManager; // pointer assignment
+    this->heaterTemperature = 0; // init
 }
 
+// Destructor
 HeatingSystem::~HeatingSystem()
 {
-    // Nothing to clean up.
 }
 
-// Simple setter that stores the new heater temperature.
+// Set heater temperature (assignment)
 void HeatingSystem::setHeaterTemperature(int value)
 {
     this->heaterTemperature = value;

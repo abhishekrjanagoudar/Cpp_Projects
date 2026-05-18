@@ -1,31 +1,33 @@
+/* UserInterface.h - short notes */
+
 #ifndef USERINTERFACE_H_
 #define USERINTERFACE_H_
 
 #include "PowerManagement.h"
 
-// UserInterface stores the values entered by the user.
+// UserInterface: handles user input/output; stores temps
 class UserInterface
 {
 public:
-    // Current measured temperature.
+    // Current temperature
     float currentTemperature;
 
-    // Target temperature entered by the user.
+    // Desired temperature set by user
     float temperatureSetByUser;
 
-    // Pointer to the shared power-management object.
+    // Pointer to PowerManagement
     PowerManagement *powerManager;
 
-    // Constructor sets the initial state.
+    // Constructor: init values and store power manager pointer
     UserInterface(PowerManagement *powerManager);
 
-    // No cleanup needed.
+    // Destructor
     ~UserInterface();
 
-    // Setter stores the current temperature.
+    // Set current temperature
     void setCurrentTemperature(float currentTemperature);
 
-    // Setter stores the requested target temperature.
+    // Set desired temperature (from UI)
     void setTemperatureSetByUser(float temperatureSetByUser);
 };
 

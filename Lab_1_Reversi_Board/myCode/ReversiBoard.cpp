@@ -1,115 +1,234 @@
+/* ReversiBoard.cpp
+ * Simple implementation notes and exam hints added near important lines.
+ * Learning: shows loops, conditionals, array access, and basic OOP usage.
+ */
+
+#include <iostream>
 #include "ReversiBoard.h"
 
-namespace
-{
-bool isInsideBoard(int column, int row)
-{
-    // Helper: keep index checks in one place.
-    return column >= 0 && column < 8 && row >= 0 && row < 8;
-}
-
-bool flipDirection(FieldState board[8][8], int startColumn, int startRow,
-        int deltaColumn, int deltaRow, FieldState piece)
-{
-    // Helper logic: walk in one direction until we hit our own stone or stop.
-    FieldState opponent = (piece == BLACK) ? WHITE : BLACK;
-    int column = startColumn + deltaColumn;
-    int row = startRow + deltaRow;
-    int capturedFields = 0;
-
-    // Loop until the chain of opponent stones ends.
-    while (isInsideBoard(column, row) && board[column][row] == opponent)
-    {
-        column += deltaColumn;
-        row += deltaRow;
-        capturedFields++;
-    }
-
-    if (capturedFields == 0)
-    {
-        return false;
-    }
-
-    if (!isInsideBoard(column, row) || board[column][row] != piece)
-    {
-        return false;
-    }
-
-    for (int step = 1; step <= capturedFields; step++)
-    {
-        // Flip the captured stones to the current player's color.
-        board[startColumn + step * deltaColumn][startRow + step * deltaRow] =
-            piece;
-    }
-
-    return true;
-}
-}
-
+// Constructor: initialize board cells and place starting pieces.
+// Syntax note: nested loops used to initialize 2D array.
 ReversiBoard::ReversiBoard()
 {
-    // Nested loops are the normal way to fill a 2D array.
+    // Initialize all fields to BLANK (looping over columns and rows).
     for (int column = 0; column < 8; column++)
     {
         for (int row = 0; row < 8; row++)
         {
-            board[column][row] = FieldState::BLANK;
+            board[column][row] = FieldState::BLANK; // array access: board[c][r]
         }
     }
 
-    // Set initial positions for BLACK and WHITE pieces.
+    // Starting position: four pieces in the center.
+    // Exam note: array indices start at 0; center is 3 and 4 for 8x8.
     board[3][3] = BLACK;
     board[4][4] = BLACK;
     board[3][4] = WHITE;
     board[4][3] = WHITE;
 }
 
+// Destructor: no dynamic memory, so left empty.
 ReversiBoard::~ReversiBoard()
 {
-    // No cleanup needed because the board uses fixed-size storage.
 }
 
+// Returns the state at (column, row).
+// Exam note: simple accessor, constant-time array read.
 FieldState ReversiBoard::getFieldState(int column, int row)
 {
-    // Direct array access is enough because the caller uses board coordinates.
     return board[column][row];
 }
 
+// Attempts to place a piece and flip opponent pieces in all directions.
+// Learning notes: uses loops, conditionals, and early `break` to stop checks.
 bool ReversiBoard::setFieldState(int column, int row, FieldState piece)
 {
-    // First reject invalid coordinates or occupied fields.
-    if (!isInsideBoard(column, row))
-    {
-        return false;
-    }
-
+    // If cell is not empty, move is invalid.
     if (getFieldState(column, row) != BLANK)
     {
-        return false;
+        return false; // condition check example
     }
 
-    bool moveIsValid = false;
-    const int directions[8][2] =
-    {
-        {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-        {1, -1}, {-1, -1}, {1, 1}, {-1, 1}
-    };
+    bool isAllowedToPlace = false; // flag set to true when a valid flip is found
 
-    // Try all eight directions; a legal move must capture in at least one.
-    for (int index = 0; index < 8; index++)
+    // EAST: move right from placed piece
+    for (int col = column + 1; col < 8; col++)
     {
-        if (flipDirection(board, column, row, directions[index][0],
-                directions[index][1], piece))
+        if (getFieldState(col, row) == BLANK) // empty -> no flanking
+            break;
+
+        if (getFieldState(col, row) == piece)
         {
-            moveIsValid = true;
+            if (col == column + 1) // adjacent same-color piece -> nothing to flip
+                break;
+
+            // Flip pieces between `column` and `col` (inclusive of boundaries)
+            for (int j = column; j < col; j++)
+            {
+                board[j][row] = piece; // array write
+            }
+            isAllowedToPlace = true;
+            break;
         }
     }
 
-    if (moveIsValid)
+    // WEST
+    for (int col = column - 1; col >= 0; col--)
     {
-        // Place the new stone only after at least one capture was found.
+        if (getFieldState(col, row) == BLANK)
+            break;
+
+        if (getFieldState(col, row) == piece)
+        {
+            if (col == column - 1)
+                break;
+
+            for (int j = column; j > col; j--)
+            {
+                board[j][row] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // SOUTH
+    for (int row1 = row + 1; row1 < 8; row1++)
+    {
+        if (getFieldState(column, row1) == BLANK)
+            break;
+
+        if (getFieldState(column, row1) == piece)
+        {
+            if (row1 == row + 1)
+                break;
+
+            for (int j = row; j < row1; j++)
+            {
+                board[column][j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // NORTH
+    for (int row1 = row - 1; row1 >= 0; row1--)
+    {
+        if (getFieldState(column, row1) == BLANK)
+            break;
+
+        if (getFieldState(column, row1) == piece)
+        {
+            if (row1 == row - 1)
+                break;
+
+            for (int j = row; j > row1; j--)
+            {
+                board[column][j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // NORTH-EAST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break; // safety check for indices
+
+        if (getFieldState(column + i, row - i) == BLANK)
+            break;
+
+        if (getFieldState(column + i, row - i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column + j][row - j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // NORTH-WEST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break;
+
+        if (getFieldState(column - i, row - i) == BLANK)
+            break;
+
+        if (getFieldState(column - i, row - i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column - j][row - j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // SOUTH-EAST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break;
+
+        if (getFieldState(column + i, row + i) == BLANK)
+            break;
+
+        if (getFieldState(column + i, row + i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column + j][row + j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // SOUTH-WEST diagonal
+    for (int i = 1; i < 8; i++)
+    {
+        if (!(column >= 0 && column < 8 && row >= 0 && row < 8))
+            break;
+
+        if (getFieldState(column - i, row + i) == BLANK)
+            break;
+
+        if (getFieldState(column - i, row + i) == piece)
+        {
+            if (i == 1)
+                break;
+
+            for (int j = 0; j < i; j++)
+            {
+                board[column - j][row + j] = piece;
+            }
+            isAllowedToPlace = true;
+            break;
+        }
+    }
+
+    // If any direction produced flips, place the new piece.
+    if (isAllowedToPlace)
+    {
         board[column][row] = piece;
     }
 
-    return moveIsValid;
+    return isAllowedToPlace; // function returns boolean result
 }

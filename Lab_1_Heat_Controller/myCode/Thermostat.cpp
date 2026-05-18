@@ -1,20 +1,22 @@
+/* Thermostat.cpp - implementation (short notes) */
+
 #include "Thermostat.h"
 
 #include "PowerManagement.h"
 
+// Constructor: store pointer and init value
 Thermostat::Thermostat(PowerManagement *powerManager)
 {
-    // Store the shared dependency and initialize the target value.
     this->powerManager = powerManager;
     this->temperatureSetByUser = 0;
 }
 
+// Destructor
 Thermostat::~Thermostat()
 {
-    // No cleanup needed.
 }
 
-// Return the stored target temperature.
+// Return user-set temperature
 float Thermostat::getTempratureSetByUser()
 {
     return temperatureSetByUser;

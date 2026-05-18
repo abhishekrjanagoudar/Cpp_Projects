@@ -1,550 +1,508 @@
-# C++ Syntax Cheat Sheet 📚
+# C++ Cheat Sheet for Exams
 
-## 1. Classes & Objects
+## 1. .h vs .cpp
 
+// Short Definition
+.h file = declarations and class interface. .cpp file = function implementations and program logic.
+
+// Syntax
 ```cpp
-class MyClass {
+// Student.h
+class Student {
+private:
+    int age;
+
+public:
+    Student(int age);
+    int getAge() const;
+};
+
+// Student.cpp
+#include "Student.h"
+
+Student::Student(int age) {
+    this->age = age;
+}
+
+int Student::getAge() const {
+    return age;
+}
+```
+
+// Example
+Use .h to show what the class can do. Use .cpp to write how it works.
+
+// Important Notes
+- .h keeps declarations, .cpp keeps implementation.
+- Put includes in .cpp when possible to keep headers small.
+- Use "#include \"Student.h\"" inside the .cpp file.
+- Most Important Exam Note: declaration first, definition later.
+
+## 2. Class Structure
+
+// Short Definition
+A class groups data and functions together.
+
+// Syntax
+```cpp
+class Car {
+private:
+    int speed;   // hidden data
+
+public:
+    Car(int s);
+    void setSpeed(int s);
+    int getSpeed() const;
+};
+```
+
+// Example
+```cpp
+class Car {
+private:
+    int speed;
+
+public:
+    Car(int s);
+    void setSpeed(int s);
+    int getSpeed() const;
+};
+
+Car::Car(int s) : speed(s) {}
+
+void Car::setSpeed(int s) {
+    speed = s;
+}
+
+int Car::getSpeed() const {
+    return speed;
+}
+```
+
+// Important Notes
+- private = internal data.
+- public = functions other code can call.
+- Use getters/setters when data must stay controlled.
+- Common mistake: writing function bodies inside the header when the task asks for .cpp separation.
+
+## 3. Constructors
+
+// Short Definition
+A constructor runs automatically when an object is created.
+
+// Syntax
+```cpp
+class Student {
+private:
+    int age;
+
+public:
+    Student(int age);   // parameterized constructor
+};
+```
+
+// Example
+```cpp
+Student::Student(int age) {
+    this->age = age;    // this-> means current object
+}
+```
+
+// Important Notes
+- Constructor name must be the same as the class name.
+- No return type, not even void.
+- Use this-> when parameter name is same as member name.
+- Common mistake: forgetting to initialize members.
+
+## 4. Methods
+
+// Short Definition
+Methods are functions inside a class.
+
+// Syntax
+```cpp
+class Student {
+public:
+    int getAge() const;
+};
+
+int Student::getAge() const {
+    return age;
+}
+```
+
+// Example
+```cpp
+class Box {
 private:
     int value;
 
 public:
-    MyClass();              // Constructor
-    ~MyClass();             // Destructor
-    void doSomething();
+    void setValue(int v);
     int getValue() const;
 };
-```
 
-**Access Modifiers:**
-- `public` - anyone can use
-- `private` - only this class
-- `protected` - this class + subclasses
-
----
-
-## 2. Constructors
-
-**Constructor:** A special member function that is automatically called when an object is created. Used to initialize objects.
-
-**Syntax**
-```cpp
-class ClassName {
-public:
-    ClassName() {
-        // initialization
-    }
-};
-```
-
-### Types of Constructors
-
-**1. Default Constructor**
-No parameters.
-
-**Syntax**
-```cpp
-ClassName() {}
-```
-
-**Example**
-```cpp
-class Car {
-public:
-    Car() {
-        cout << "Car created";
-    }
-};
-```
-
-**2. Parameterized Constructor**
-Takes parameters.
-
-**Syntax**
-```cpp
-ClassName(dataType value) {}
-```
-
-**Example**
-```cpp
-class Car {
-public:
-    int speed;
-
-    Car(int s) {
-        speed = s;
-    }
-};
-```
-
-**3. Copy Constructor**
-Creates object by copying another object.
-
-**Syntax**
-```cpp
-ClassName(const ClassName &obj) {}
-```
-
-**Example**
-```cpp
-class Car {
-public:
-    int speed;
-
-    Car(int s) {
-        speed = s;
-    }
-
-    Car(const Car &c) {
-        speed = c.speed;
-    }
-};
-```
-
----
-
-## 3. Pointers
-
-**Pointer:** A pointer stores the memory address of another variable.
-
-**Syntax**
-```cpp
-dataType *pointerName;
-```
-
-**Example**
-```cpp
-int x = 10;
-int *ptr = &x;
-
-cout << x;      // 10
-cout << &x;     // address of x
-cout << ptr;    // address of x
-cout << *ptr;   // value at address = 10
-```
-
-**Important Symbols**
-
-| Symbol | Meaning |
-|--------|---------|
-| `&`    | Address of variable |
-| `*`    | Value at address (dereference) |
-
-**Pointer with Arrays**
-```cpp
-int arr[3] = {1,2,3};
-
-int *ptr = arr;
-
-cout << *ptr;      // 1
-cout << *(ptr+1);  // 2
-```
-
-**Object Pointers (Dynamic Memory)**
-```cpp
-MyClass* obj = new MyClass();
-obj->getValue();        // -> for pointers
-delete obj;             // Free memory
-obj = nullptr;
-```
-
-**The `this` Pointer**
-`this` is a special pointer that stores the address of the current object. Used inside class member functions.
-
-**Syntax**
-```cpp
-this->variableName
-```
-
-**Example**
-```cpp
-class Student {
-public:
-    int age;
-
-    Student(int age) {
-        this->age = age;  // Left age - Class Age , Right age - Parameterized
-    }
-
-    void display() {
-        cout << this->age;
-    }
-};
-```
-
-**Key Points**
-- Pointer stores address
-- `*ptr` &rarr; value
-- `&x` &rarr; address
-- Used in dynamic memory, arrays, functions, OOPs
-
----
-
-## 4. Smart Pointers
-
-```cpp
-#include <memory>
-
-std::unique_ptr<MyClass> p1(new MyClass());
-// Automatic cleanup, cannot be copied
-
-std::shared_ptr<MyClass> p2(new MyClass());
-// Multiple owners allowed
-```
-
----
-
-## 5. Methods
-
-**Header (.h):**
-```cpp
-class MyClass {
-public:
-    void myMethod();
-    int getValue() const;
-};
-```
-
-**Implementation (.cpp):**
-```cpp
-void MyClass::myMethod() {
-    // code here
+void Box::setValue(int v) {
+    value = v;
 }
 
-int MyClass::getValue() const {
+int Box::getValue() const {
     return value;
 }
 ```
 
-**const methods** = cannot modify members
+// Important Notes
+- Use ClassName::functionName in .cpp.
+- const after the function means the method does not modify the object.
+- Common mistake: missing ClassName:: in implementation.
 
----
+## 5. const
 
-## 6. Inheritance
+// Short Definition
+const means the value should not change.
 
+// Syntax
+```cpp
+const int x = 5;
+int getAge() const;
+void printName(const std::string& name);
+```
+
+// Example
+```cpp
+int Student::getAge() const {
+    return age;
+}
+
+void printName(const std::string& name) {
+    std::cout << name << '\n';
+}
+```
+
+// Important Notes
+- const variable = cannot change after assignment.
+- const method = does not modify object data.
+- const reference avoids copying.
+- Common mistake: forgetting const in getter functions.
+
+## 6. References
+
+// Short Definition
+A reference is another name for an existing variable.
+
+// Syntax
+```cpp
+int x = 10;
+int& ref = x;
+```
+
+// Example
+```cpp
+void setAge(int& age) {
+    age = 20;   // changes original variable
+}
+```
+
+// Important Notes
+- Use & in function parameters to avoid copying.
+- References must be initialized.
+- Common mistake: confusing reference & with address-of operator.
+
+## 7. Pointers
+
+// Short Definition
+A pointer stores the address of a variable.
+
+// Syntax
+```cpp
+int x = 10;
+int* ptr = &x;
+```
+
+// Example
+```cpp
+int x = 10;
+int* ptr = &x;
+
+std::cout << x << '\n';     // value
+std::cout << &x << '\n';    // address of x
+std::cout << ptr << '\n';   // address stored in ptr
+std::cout << *ptr << '\n';  // value at address
+```
+
+// Important Notes
+- &x gives the address of x.
+- *ptr gives the value at the stored address.
+- Use -> for object access through a pointer.
+- Common mistake: using *ptr when ptr is not valid.
+
+## 8. this and this->
+
+// Short Definition
+this is a pointer to the current object.
+
+// Syntax
+```cpp
+this->member = value;
+```
+
+// Example
+```cpp
+class Student {
+private:
+    int age;
+
+public:
+    Student(int age) {
+        this->age = age;   // member = parameter
+    }
+};
+```
+
+// Important Notes
+- Use this-> when parameter names hide member names.
+- Helps make code clear in constructors and setters.
+- Common mistake: writing age = age; without this->.
+
+## 9. Inheritance
+
+// Short Definition
+Inheritance lets one class use features of another class.
+
+// Syntax
 ```cpp
 class Parent {
 public:
-    virtual void print() { }
+    void show();
 };
 
 class Child : public Parent {
 public:
-    void print() override { }
+    void childOnly();
 };
 ```
 
----
-
-## 7. Vector
-
+// Example
 ```cpp
-#include <vector>
+class Animal {
+public:
+    void eat() {
+        std::cout << "Eating\n";
+    }
+};
 
-std::vector<int> v;
-v.push_back(5);         // Add
-v.pop_back();           // Remove last
-cout << v[0];           // Access
-v.size();               // Length
+class Dog : public Animal {
+public:
+    void bark() {
+        std::cout << "Bark\n";
+    }
+};
 ```
 
----
+// Important Notes
+- public inheritance means "is-a" relationship.
+- Child class gets parent functions.
+- Common mistake: forgetting public after the colon.
 
-## 8. Map
+## 10. virtual and override
 
-```cpp
-#include <map>
+// Short Definition
+virtual allows runtime polymorphism. override checks that a child function really replaces a parent function.
 
-std::map<std::string, int> m;
-m["key"] = 10;          // Insert/update
-cout << m["key"];       // Lookup
-
-for (auto& pair : m) {
-    cout << pair.first << pair.second;
-}
-```
-
----
-
-## 9. Set
-
-```cpp
-#include <set>
-
-std::set<int> s;
-s.insert(5);
-s.erase(5);
-cout << s.size();
-```
-
----
-
-## 10. Exceptions
-
-```cpp
-// Throw
-if (x < 0) {
-    throw std::invalid_argument("Bad value");
-}
-
-// Catch
-try {
-    doSomething();
-}
-catch (const std::invalid_argument& e) {
-    cout << e.what();
-}
-```
-
----
-
-## 11. Loops
-
-```cpp
-// For loop
-for (int i = 0; i < 10; i++) { }
-
-// Range-based loop
-for (auto& item : container) { }
-
-// While loop
-while (condition) { }
-```
-
----
-
-## 12. Strings
-
-```cpp
-#include <string>
-
-std::string s = "hello";
-s.length();
-s.substr(0, 2);
-std::to_string(42);     // int to string
-```
-
----
-
-## 13. Output
-
-```cpp
-#include <iostream>
-#include <iomanip>
-
-cout << "text" << endl;
-cout << std::fixed << std::setprecision(2) << 3.14;
-cout << std::setw(10) << "padded";
-```
-
----
-
-## 14. Enum
-
-```cpp
-enum Color { RED, GREEN, BLUE };
-
-Color c = RED;
-switch (c) {
-    case RED: cout << "Red"; break;
-}
-```
-
----
-
-## 15. File I/O
-
-```cpp
-#include <fstream>
-
-// Write
-std::ofstream out("file.txt");
-out << "Hello";
-out.close();
-
-// Read
-std::ifstream in("file.txt");
-std::string line;
-while (std::getline(in, line)) { }
-```
-
----
-
-## Quick Syntax
-
-| What | Syntax |
-|-----|--------|
-| Class | `class Name { };` |
-| Object | `Name obj;` |
-| Pointer | `Name* ptr = new Name();` |
-| Delete | `delete ptr;` |
-| Method | `void doIt() { }` |
-| Const | `int get() const { }` |
-| Vector | `std::vector<T> v;` |
-| Map | `std::map<K, V> m;` |
-| Throw | `throw std::exception();` |
-| Try-Catch | `try { } catch { }` |
-
----
-
-## 16. Lab 1 Syntax Additions
-
-### Virtual and Override
+// Syntax
 ```cpp
 class Base {
 public:
-    virtual void print() = 0;
+    virtual void print() const;
     virtual ~Base() = default;
 };
 
 class Derived : public Base {
 public:
-    void print() override;
+    void print() const override;
 };
 ```
 
-### Rule of Three / Five
+// Example
 ```cpp
-class Example {
+class Shape {
 public:
-    Example();
-    Example(const Example& other);
-    Example(Example&& other);
-    Example& operator=(const Example& other);
-    Example& operator=(Example&& other);
-    ~Example();
-};
-```
-
-### Arrays and Loops
-```cpp
-for (int row = 0; row < 8; ++row) {
-    for (int col = 0; col < 8; ++col) {
+    virtual void draw() const {
+        std::cout << "Shape\n";
     }
-}
+    virtual ~Shape() = default;
+};
 
-for (int index = size - 1; index >= 0; --index) {
-}
-```
-
-### References and `this`
-```cpp
-void setValue(const std::string& value) {
-    this->value = value;
-}
-```
-
----
-
-## 17. Lab 2 Syntax Additions
-
-### Value Types
-```cpp
-class GridPosition {
+class Circle : public Shape {
 public:
-    GridPosition(char row, int column);
-    char getRow() const;
-    int getColumn() const;
-    bool operator==(const GridPosition& other) const;
+    void draw() const override {
+        std::cout << "Circle\n";
+    }
 };
 ```
 
-### Enum and Switch
-```cpp
-enum Impact { NONE, HIT, SUNKEN };
+// Important Notes
+- virtual on base class enables dynamic dispatch.
+- override catches spelling/signature mistakes.
+- Use virtual destructor in base classes.
+- Most Important Exam Note: always use override in derived classes when possible.
 
-switch (impact) {
-case NONE:
-    break;
-case HIT:
-    break;
-case SUNKEN:
-    break;
+## 11. Smart Pointers
+
+// Short Definition
+Smart pointers manage memory automatically.
+
+// Syntax
+```cpp
+#include <memory>
+
+std::unique_ptr<Student> p1 = std::make_unique<Student>(10);
+std::shared_ptr<Student> p2 = std::make_shared<Student>(10);
+```
+
+// Example
+```cpp
+std::unique_ptr<Student> p1 = std::make_unique<Student>(10);
+// only one owner, auto delete
+
+std::shared_ptr<Student> p2 = std::make_shared<Student>(10);
+// shared ownership
+```
+
+// Important Notes
+- unique_ptr = one owner.
+- shared_ptr = many owners.
+- Prefer smart pointers over raw new/delete.
+- Common mistake: copying a unique_ptr.
+
+## 12. vectors, maps, sets
+
+// Short Definition
+STL containers store and organize data.
+
+// Syntax
+```cpp
+#include <vector>
+#include <map>
+#include <set>
+
+std::vector<int> nums;
+std::map<std::string, int> ages;
+std::set<int> values;
+```
+
+// Example
+```cpp
+std::vector<int> nums = {1, 2, 3};
+nums.push_back(4);          // add element
+
+std::map<std::string, int> ages;
+ages["Ali"] = 20;           // insert or update
+
+std::set<int> values;
+values.insert(5);            // unique values only
+```
+
+// Important Notes
+- vector = ordered list.
+- map = key-value pairs.
+- set = unique sorted values.
+- Common mistake: using [] on map for lookup when key may not exist.
+
+## 13. Exceptions
+
+// Short Definition
+Exceptions handle errors safely.
+
+// Syntax
+```cpp
+try {
+    // code
+}
+catch (const std::exception& e) {
+    // error handling
 }
 ```
 
-### Set and Map Usage
+// Example
 ```cpp
-std::set<GridPosition> positions;
-std::map<GridPosition, Shot> shots;
+if (age < 0) {
+    throw std::invalid_argument("Age must be positive");
+}
 
-positions.insert(GridPosition('A', 1));
-shots[GridPosition('A', 1)] = Shot(GridPosition('A', 1), HIT);
-```
-
-### STL Algorithms
-```cpp
-std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), result.begin());
-std::includes(container.begin(), container.end(), subset.begin(), subset.end());
-```
-
-### Range-Based Loop
-```cpp
-for (const auto& ship : ships) {
+try {
+    setAge(-1);
+}
+catch (const std::invalid_argument& e) {
+    std::cout << e.what();
 }
 ```
 
----
+// Important Notes
+- throw creates the error.
+- catch handles the error.
+- Use const std::exception& for general error handling.
+- Common mistake: throwing errors but never catching them.
 
-## 18. Lab 3 Syntax Additions
+## 14. File Handling
 
-### Abstract Base Class
+// Short Definition
+File handling reads from and writes to files.
+
+// Syntax
 ```cpp
-class Course {
-public:
-    virtual ~Course() = 0;
-    virtual void write(std::ostringstream& os) const = 0;
-    virtual void read(std::istringstream& is) = 0;
-    virtual std::string getCourseDetail() const = 0;
-};
+#include <fstream>
+
+std::ofstream out("file.txt");
+std::ifstream in("file.txt");
 ```
 
-### Inheritance with Constructors
+// Example
 ```cpp
-class WeeklyCourse : public Course {
-public:
-    WeeklyCourse(unsigned int courseKey, std::string title, std::string major,
-                 float creditPoints, Poco::DateTime::DaysOfWeek dayOfWeek,
-                 Poco::Data::Time startTime, Poco::Data::Time endTime);
-};
+// write
+std::ofstream out("data.txt");
+out << "Hello\n";
+
+// read
+std::ifstream in("data.txt");
+std::string line;
+while (std::getline(in, line)) {
+    std::cout << line << '\n';
+}
 ```
 
-### Smart Pointers and Factory Style Creation
-```cpp
-std::unique_ptr<Course> course = std::make_unique<WeeklyCourse>(101, "Title", "Major", 3.0,
-                                                                Poco::DateTime::DaysOfWeek::MONDAY,
-                                                                Poco::Data::Time(9, 0, 0),
-                                                                Poco::Data::Time(11, 0, 0));
-```
+// Important Notes
+- ofstream = write file.
+- ifstream = read file.
+- Check if the file opened before using it.
+- Common mistake: forgetting to close or check the file stream.
 
-### Serialization With Streams
-```cpp
-std::ostringstream os;
-std::istringstream is(text);
+## 15. Quick Syntax Table
 
-os << value << ';' << otherValue;
-getline(is, token, ';');
-```
+| Topic | Syntax |
+|---|---|
+| Class | `class Name { ... };` |
+| Object | `Name obj;` |
+| Pointer | `Type* ptr = &value;` |
+| Reference | `Type& ref = value;` |
+| Const method | `int get() const;` |
+| Override | `void f() override;` |
+| Vector | `std::vector<int> v;` |
+| Map | `std::map<K, V> m;` |
+| Set | `std::set<T> s;` |
+| Throw | `throw std::runtime_error("msg");` |
 
-### Move Syntax
-```cpp
-Course other(std::move(course));
-```
+## 16. Most Important Exam Notes
 
-### Static Cast and Enum Conversion
-```cpp
-Poco::DateTime::DaysOfWeek day = static_cast<Poco::DateTime::DaysOfWeek>(dayNo);
-```
-
-### Map and Unique Pointer Access
-```cpp
-auto& courseMap = database.getCourses();
-auto& studentMap = database.getStudents();
-
-courseMap[101] = std::make_unique<BlockCourse>(101, "Title", "Major", 4.0,
-                                               Poco::Data::Date(2025, 1, 1),
-                                               Poco::Data::Date(2025, 2, 1),
-                                               Poco::Data::Time(8, 0, 0),
-                                               Poco::Data::Time(10, 0, 0));
-```
+- .h = declaration, .cpp = implementation.
+- Use const for read-only functions and variables.
+- Use & for passing large objects without copying.
+- Use * for pointers and -> for pointer member access.
+- Use this-> when member names and parameter names are the same.
+- Use virtual in base classes and override in child classes.
+- Prefer smart pointers instead of raw new/delete.
+- Use vector for ordered data, map for key-value data, set for unique values.
+- Always check file open status when reading/writing files.
+- Common mistakes: missing ClassName::, forgetting const, forgetting public inheritance, and using raw pointers without deleting them.
 
 ---

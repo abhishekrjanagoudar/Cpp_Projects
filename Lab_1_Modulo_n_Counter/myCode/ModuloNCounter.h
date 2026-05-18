@@ -1,26 +1,27 @@
+/* ModuloNCounter.h - simple notes and exam hints */
+
 #ifndef MODULONCOUNTER_H_
 #define MODULONCOUNTER_H_
 
 #include "ModuloNDigit.h"
 
-// The multi-digit counter owns a dynamic array of digits.
+// ModuloNCounter: manages a multi-digit counter (OOP: composition)
+// - Uses an array of `ModuloNDigit` objects to represent digits
+// Exam notes: constructors allocate resources; copy ctor must deep-copy; destructor frees memory.
 class ModuloNCounter
 {
 public:
-	// Constructor builds the digit array and stores the base.
 	ModuloNCounter(int maxRange, int noOfDigits);
-	// Copy constructor keeps the dynamic array safe with deep copy.
 	ModuloNCounter(const ModuloNCounter &other);
-	// Destructor releases the allocated digit array.
-	~ModuloNCounter();
+	~ModuloNCounter(); // Destructor: frees dynamic array (see cpp)
 
-	int rangeN;
-	int noOfDigits;
-	ModuloNDigit *counter;
+	int rangeN; // base/range for each digit (syntax: simple member)
+	int noOfDigits; // number of digits in the counter
+	ModuloNDigit *counter; // pointer to dynamic array (pointers: holds address returned by new)
 
-	// Increments the whole counter like an odometer.
+	// increment: advances the counter; returns true on overall overflow
 	bool increment();
-	// Prints the full value from most significant to least significant digit.
+	// print: outputs current counter representation
 	void print();
 };
 

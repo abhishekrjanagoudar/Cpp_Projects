@@ -1,22 +1,25 @@
+/* Controller.h - simple notes */
+
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
-// Controller stores the current temperature and the user's target value.
+// Controller: basic temperature controller (holds current and desired temp)
 class Controller
 {
 public:
-    // Constructor initializes the state to known values.
+    // Constructor: initialize temperatures
     Controller();
 
-    // Destructor is virtual in case the class is extended later.
+    // Virtual destructor: safe for inheritance
     virtual ~Controller();
 
-    // Public data keeps the example straightforward for learning.
+    // Current temperature (Celsius)
     float currentTemp;
 
+    // Desired temperature set by user (Celsius)
     float tempSetByUser;
 
-    // Stores the new target temperature.
+    // Set the desired temperature (example of a simple setter function)
     void setTempSetByUser(int value);
 };
 

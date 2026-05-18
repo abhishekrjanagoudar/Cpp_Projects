@@ -1,3 +1,5 @@
+/* HeatController.h - simple notes */
+
 #ifndef HEATCONTROLLER_H_
 #define HEATCONTROLLER_H_
 
@@ -9,37 +11,38 @@
 #include "Controller.h"
 #include "Thermostat.h"
 
-// HeatController is the top-level object that wires all sub-components.
+// HeatController: aggregates subsystems (composition). OOP: shows member objects.
 class HeatController
 {
 public:
-    // Constructor creates the full component tree.
+    // Constructor: initialize subsystems
     HeatController();
 
-    // Destructor is empty because the members clean themselves up.
+    // Destructor
     ~HeatController();
 
-    // PowerManagement is the shared dependency used by the components.
+    // Power management object (example of direct member initialization)
     PowerManagement powerManagement = PowerManagement(240, 10);
 
-    // Member objects use pointers to the shared power-management object.
+    // UI uses pointer to powerManagement (shows passing address)
     UserInterface userInterface = UserInterface(&powerManagement);
 
-    // The thermostat stores the temperature requested by the user.
+    // Thermostat: constructed with pointer to power manager
     Thermostat thermostatController = Thermostat(&powerManagement);
 
-    // Heating and cooling are separate functional components.
+    // Heating system (composition)
     HeatingSystem heatingSystem = HeatingSystem(&powerManagement);
 
+    // Cooling system
     CoolingSystem coolingSystem = CoolingSystem(&powerManagement);
 
-    // Sensor reads the current temperature from the environment.
+    // Temperature sensor (note: variable name `tempratureSensor` as in code)
     TemperatureSensor tempratureSensor = TemperatureSensor(&powerManagement);
 
-    // Controller keeps the current value and the user-set target.
+    // Controller object
     Controller controller = Controller();
 
-    // Updates the target temperature in the collaborating components.
+    // Set desired room temperature
     void setRoomTemp(int temp);
 };
 
