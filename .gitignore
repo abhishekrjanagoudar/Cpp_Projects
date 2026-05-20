@@ -1,0 +1,35 @@
+/.metadata/
+
+# Build output folders
+**/Debug/
+**/Release/
+**/x64/
+**/x86/
+**/html/
+
+# Eclipse project metadata
+**/.project
+**/.cproject
+**/.settings/
+**/.gdbinit
+
+# C/C++ build artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Debug symbols and linker intermediates
+*.pdb
+*.idb
+*.ilk
+
+# Common temporary/log files
+*.log
+*.tmp
+*.cache

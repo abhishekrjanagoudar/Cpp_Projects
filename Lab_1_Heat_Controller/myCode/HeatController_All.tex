@@ -1,0 +1,551 @@
+% HeatController_All.tex - Combined source listing for Lab_1_Heat_Controller/myCode
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{hyperref}
+
+% Color scheme
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{commentcolor}{RGB}{0,120,0}
+\definecolor{stringcolor}{RGB}{180,0,0}
+\definecolor{bg}{RGB}{248,248,248}
+
+\lstset{
+  backgroundcolor=\color{bg},
+  language=C++,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{kwcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  stepnumber=1,
+  numbersep=8pt,
+  tabsize=4,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  captionpos=b
+}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE Heat Controller - Combined Source Listing}
+\end{center}
+\vspace{6pt}
+\bigskip
+
+\section*{PowerManagement.h}
+\begin{lstlisting}
+/* PowerManagement.h - short notes */
+
+#ifndef POWERMANAGEMENT_H_
+#define POWERMANAGEMENT_H_
+
+// PowerManagement: holds voltage/current and power state
+class PowerManagement
+{
+public:
+    // System voltage (V)
+    int voltage;
+
+    // System current (A)
+    int current;
+
+    // Power system on/off flag
+    bool isPowerSystemOn;
+
+    // Constructor: set voltage and current
+    PowerManagement(int vol, int cur);
+
+    // Destructor
+    ~PowerManagement();
+};
+
+#endif /* POWERMANAGEMENT_H_ */
+\end{lstlisting}
+
+\section*{PowerManagement.cpp}
+\begin{lstlisting}
+/* PowerManagement.cpp - implementation (short notes) */
+
+#include "PowerManagement.h"
+
+// Constructor: set voltage/current and enable power
+PowerManagement::PowerManagement(int vol, int cur)
+{
+    this->voltage = vol;
+    this->current = cur;
+    this->isPowerSystemOn = true;
+}
+
+// Destructor
+PowerManagement::~PowerManagement()
+{
+}
+\end{lstlisting}
+
+\section*{UserInterface.h}
+\begin{lstlisting}
+/* UserInterface.h - short notes */
+
+#ifndef USERINTERFACE_H_
+#define USERINTERFACE_H_
+
+#include "PowerManagement.h"
+
+// UserInterface: handles user input/output; stores temps
+class UserInterface
+{
+public:
+    // Current temperature
+    float currentTemperature;
+
+    // Desired temperature set by user
+    float temperatureSetByUser;
+
+    // Pointer to PowerManagement
+    PowerManagement *powerManager;
+
+    // Constructor: init values and store power manager pointer
+    UserInterface(PowerManagement *powerManager);
+
+    // Destructor
+    ~UserInterface();
+
+    // Set current temperature
+    void setCurrentTemperature(float currentTemperature);
+
+    // Set desired temperature (from UI)
+    void setTemperatureSetByUser(float temperatureSetByUser);
+};
+
+#endif /* USERINTERFACE_H_ */
+\end{lstlisting}
+
+\section*{UserInterface.cpp}
+\begin{lstlisting}
+/* UserInterface.cpp - implementation (short notes) */
+
+#include "UserInterface.h"
+
+// Constructor: store pointer and init temps
+UserInterface::UserInterface(PowerManagement *powerManager)
+{
+    this->powerManager = powerManager;
+    this->currentTemperature = 0;
+    this->temperatureSetByUser = 0;
+}
+
+// Destructor
+UserInterface::~UserInterface()
+{
+}
+
+// Set current temperature (assignment)
+void UserInterface::setCurrentTemperature(float currentTemperature)
+{
+    this->currentTemperature = currentTemperature;
+}
+
+// Set desired temperature from UI
+void UserInterface::setTemperatureSetByUser(float temperatureSetByUser)
+{
+    this->temperatureSetByUser = temperatureSetByUser;
+}
+\end{lstlisting}
+
+\section*{TemperatureSensor.h}
+\begin{lstlisting}
+/* TemperatureSensor.h - short notes (no STL used) */
+
+#ifndef TEMPERATURESENSOR_H_
+#define TEMPERATURESENSOR_H_
+
+#include "PowerManagement.h"
+
+// TemperatureSensor: reads current temperature; shows pointer use
+class TemperatureSensor
+{
+public:
+    // Current temperature
+    float currentTemperature;
+
+    // Pointer to PowerManagement
+    PowerManagement *powerManager;
+
+    // Constructor: set pointer and init temperature
+    TemperatureSensor(PowerManagement *powerManager);
+
+    // Destructor
+    ~TemperatureSensor();
+
+    // Return current temperature (simple accessor)
+    float getCurrentTemperature();
+};
+
+#endif /* TEMPERATURESENSOR_H_ */
+\end{lstlisting}
+
+\section*{TemperatureSensor.cpp}
+\begin{lstlisting}
+/* TemperatureSensor.cpp - implementation (short notes) */
+
+#include "TemperatureSensor.h"
+#include "PowerManagement.h"
+
+// Constructor: store pointer and init temperature
+TemperatureSensor::TemperatureSensor(PowerManagement *powerManager)
+{
+    this->powerManager = powerManager;
+    this->currentTemperature = 0;
+}
+
+// Destructor
+TemperatureSensor::~TemperatureSensor()
+{
+}
+
+// Return current temperature
+float TemperatureSensor::getCurrentTemperature()
+{
+    return currentTemperature;
+}
+\end{lstlisting}
+
+\section*{HeatingSystem.h}
+\begin{lstlisting}
+/* HeatingSystem.h - short notes */
+
+#ifndef HEATINGSYSTEM_H_
+#define HEATINGSYSTEM_H_
+
+#include "PowerManagement.h"
+
+// HeatingSystem: controls heater; uses PowerManagement pointer.
+class HeatingSystem
+{
+public:
+    // Heater temperature (Celsius)
+    float heaterTemperature;
+
+    // Constructor: accept pointer to PowerManagement
+    HeatingSystem(PowerManagement *powerManager);
+
+    // Pointer to PowerManagement (shows pointer usage)
+    PowerManagement *powerManager;
+
+    // Destructor
+    ~HeatingSystem();
+
+    // Set heater temperature (simple setter)
+    void setHeaterTemperature(int value);
+};
+
+#endif /* HEATINGSYSTEM_H_ */
+\end{lstlisting}
+
+\section*{HeatingSystem.cpp}
+\begin{lstlisting}
+/* HeatingSystem.cpp - implementation (short notes) */
+
+#include "HeatingSystem.h"
+#include "PowerManagement.h"
+
+// Constructor: store pointer and init temperature
+HeatingSystem::HeatingSystem(PowerManagement *powerManager)
+{
+    this->powerManager = powerManager; // pointer assignment
+    this->heaterTemperature = 0; // init
+}
+
+// Destructor
+HeatingSystem::~HeatingSystem()
+{
+}
+
+// Set heater temperature (assignment)
+void HeatingSystem::setHeaterTemperature(int value)
+{
+    this->heaterTemperature = value;
+}
+\end{lstlisting}
+
+\section*{CoolingSystem.h}
+\begin{lstlisting}
+/* CoolingSystem.h - short notes */
+
+#ifndef COOLINGSYSTEM_H_
+#define COOLINGSYSTEM_H_
+
+#include "PowerManagement.h"
+
+// CoolingSystem: controls cooler; holds pointer to PowerManagement
+class CoolingSystem
+{
+public:
+    // Cooler temperature (Celsius)
+    float coolerValue;
+
+    // Pointer to PowerManagement
+    PowerManagement *powerManager;
+
+    // Constructor: accept pointer to PowerManagement
+    CoolingSystem(PowerManagement *powerManager);
+
+    // Destructor
+    ~CoolingSystem();
+
+    // Set cooler temperature
+    void setCoolerTemperature(int value);
+};
+
+#endif /* COOLINGSYSTEM_H_ */
+\end{lstlisting}
+
+\section*{CoolingSystem.cpp}
+\begin{lstlisting}
+/* CoolingSystem.cpp - implementation (short notes) */
+
+#include "CoolingSystem.h"
+
+// Constructor: store pointer and init cooler value
+CoolingSystem::CoolingSystem(PowerManagement *powerManager)
+{
+    this->powerManager = powerManager;
+    this->coolerValue = 0;
+}
+
+// Destructor
+CoolingSystem::~CoolingSystem()
+{
+}
+
+// Set cooler temperature
+void CoolingSystem::setCoolerTemperature(int value)
+{
+    coolerValue = value;
+}
+\end{lstlisting}
+
+\section*{Thermostat.h}
+\begin{lstlisting}
+/* Thermostat.h - short notes */
+
+#ifndef THERMOSTAT_H_
+#define THERMOSTAT_H_
+
+#include "PowerManagement.h"
+
+// Thermostat: stores user-set temperature; provides accessor
+class Thermostat
+{
+public:
+    // User-set temperature
+    float temperatureSetByUser;
+
+    // Pointer to PowerManagement
+    PowerManagement *powerManager;
+
+    // Constructor: init and store power manager pointer
+    Thermostat(PowerManagement *powerManager);
+
+    // Destructor
+    ~Thermostat();
+
+    // Return user-set temperature (note: spelling kept as in code)
+    float getTempratureSetByUser();
+};
+
+#endif /* THERMOSTAT_H_ */
+\end{lstlisting}
+
+\section*{Thermostat.cpp}
+\begin{lstlisting}
+/* Thermostat.cpp - implementation (short notes) */
+
+#include "Thermostat.h"
+
+#include "PowerManagement.h"
+
+// Constructor: store pointer and init value
+Thermostat::Thermostat(PowerManagement *powerManager)
+{
+    this->powerManager = powerManager;
+    this->temperatureSetByUser = 0;
+}
+
+// Destructor
+Thermostat::~Thermostat()
+{
+}
+
+// Return user-set temperature
+float Thermostat::getTempratureSetByUser()
+{
+    return temperatureSetByUser;
+}
+\end{lstlisting}
+
+\section*{Controller.h}
+\begin{lstlisting}
+/* Controller.h - simple notes */
+
+#ifndef CONTROLLER_H_
+#define CONTROLLER_H_
+
+// Controller: basic temperature controller (holds current and desired temp)
+class Controller
+{
+public:
+    // Constructor: initialize temperatures
+    Controller();
+
+    // Virtual destructor: safe for inheritance
+    virtual ~Controller();
+
+    // Current temperature (Celsius)
+    float currentTemp;
+
+    // Desired temperature set by user (Celsius)
+    float tempSetByUser;
+
+    // Set the desired temperature (example of a simple setter function)
+    void setTempSetByUser(int value);
+};
+
+#endif /* CONTROLLER_H_ */
+\end{lstlisting}
+
+\section*{Controller.cpp}
+\begin{lstlisting}
+/* Controller.cpp - implementation (short notes) */
+
+#include "Controller.h"
+
+// Constructor: initialize member variables
+Controller::Controller()
+{
+    this->currentTemp = 0; // default current temperature
+    this->tempSetByUser = 0; // default desired temperature
+}
+
+// Destructor: no dynamic resources to free
+Controller::~Controller()
+{
+}
+
+// Setter: update the desired temperature (simple function, shows `this->`)
+void Controller::setTempSetByUser(int value)
+{
+    this->tempSetByUser = value; // assignment to member variable
+}
+\end{lstlisting}
+
+\section*{HeatController.h}
+\begin{lstlisting}
+/* HeatController.h - simple notes */
+
+#ifndef HEATCONTROLLER_H_
+#define HEATCONTROLLER_H_
+
+#include "UserInterface.h"
+#include "HeatingSystem.h"
+#include "CoolingSystem.h"
+#include "PowerManagement.h"
+#include "TemperatureSensor.h"
+#include "Controller.h"
+#include "Thermostat.h"
+
+// HeatController: aggregates subsystems (composition). OOP: shows member objects.
+class HeatController
+{
+public:
+    // Constructor: initialize subsystems
+    HeatController();
+
+    // Destructor
+    ~HeatController();
+
+    // Power management object (example of direct member initialization)
+    PowerManagement powerManagement = PowerManagement(240, 10);
+
+    // UI uses pointer to powerManagement (shows passing address)
+    UserInterface userInterface = UserInterface(&powerManagement);
+
+    // Thermostat: constructed with pointer to power manager
+    Thermostat thermostatController = Thermostat(&powerManagement);
+
+    // Heating system (composition)
+    HeatingSystem heatingSystem = HeatingSystem(&powerManagement);
+
+    // Cooling system
+    CoolingSystem coolingSystem = CoolingSystem(&powerManagement);
+
+    // Temperature sensor (note: variable name `tempratureSensor` as in code)
+    TemperatureSensor tempratureSensor = TemperatureSensor(&powerManagement);
+
+    // Controller object
+    Controller controller = Controller();
+
+    // Set desired room temperature
+    void setRoomTemp(int temp);
+};
+
+#endif /* HEATCONTROLLER_H_ */
+\end{lstlisting}
+
+\section*{HeatController.cpp}
+\begin{lstlisting}
+/* HeatController.cpp - implementation (short notes) */
+
+#include "HeatController.h"
+
+// Constructor
+HeatController::HeatController()
+{
+}
+
+// Destructor
+HeatController::~HeatController()
+{
+}
+
+// Update UI and controller with desired temperature
+void HeatController::setRoomTemp(int temp)
+{
+    userInterface.setTemperatureSetByUser(temp); // calls UI method
+    controller.setTempSetByUser(temp); // updates controller state
+}
+\end{lstlisting}
+
+\section*{main.cpp}
+\begin{lstlisting}
+/* main.cpp - simple runner */
+
+// Standard (system) header files
+#include <iostream>
+#include <cstdlib>
+#include "HeatController.h"
+// Add more standard header files as required
+// #include <string>
+
+using namespace std;
+
+// Main program: construct HeatController and set room temp
+int main()
+{
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+    // Create controller (calls constructors for member subsystems)
+    HeatController heatController = HeatController();
+    heatController.setRoomTemp(24); // example call to set temperature
+    return 0;
+}
+\end{lstlisting}
+
+\end{document}

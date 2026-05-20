@@ -1,0 +1,289 @@
+% ModuloCounter_All.tex - Combined source listing for Lab_1_Modulo_n_Counter
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{hyperref}
+
+% Color scheme (matches other labs)
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{commentcolor}{RGB}{0,120,0}
+\definecolor{stringcolor}{RGB}{180,0,0}
+\definecolor{bg}{RGB}{248,248,248}
+
+\lstset{
+  backgroundcolor=\color{bg},
+  language=C++,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{kwcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  stepnumber=1,
+  numbersep=8pt,
+  tabsize=4,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  captionpos=b
+}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE Modulo N Counter - Combined Source Listing}
+\end{center}
+\vspace{6pt}
+
+\section*{ModuloNDigit.h}
+\begin{lstlisting}
+/* ModuloNDigit.h - short notes and quick exam hints */
+
+// ModuloNDigit: single digit counter that wraps at `rangeN`.
+// Syntax note: member initialization and default values (C++11): `int countValue = 0;`.
+// Exam hint: incrementCounter demonstrates modular arithmetic and wrap-around logic.
+class ModuloNDigit
+{
+public:
+    int countValue = 0;
+    int rangeN;
+
+    // Constructors/Destructors: initialize and cleanup
+    ModuloNDigit();
+    ModuloNDigit(int maxRange); // set upper bound for wrap-around
+    ~ModuloNDigit();
+
+    // incrementCounter: increases value and returns true if wrapped to 0
+    bool incrementCounter();
+    // printCounter: prints current value (logic kept simple for exams)
+    void printCounter();
+};
+\end{lstlisting}
+
+\section*{ModuloNDigit.cpp}
+\begin{lstlisting}
+/* ModuloNDigit.cpp - implementation with short notes */
+
+#include "ModuloNDigit.h"
+#include <iostream>
+using namespace std;
+
+// Constructor to initialize counter with a maximum range
+// Constructor/Destructor: show basic initialization and cleanup
+ModuloNDigit::ModuloNDigit(int maxRange)
+{
+    rangeN = maxRange; // store the modulo base
+    countValue = 0; // ensure starting at 0
+}
+
+// Destructor
+ModuloNDigit::~ModuloNDigit()
+{
+}
+
+// Increment counter and reset if it reaches the maximum
+// Logic: increment then check for wrap-around (modular arithmetic)
+bool ModuloNDigit::incrementCounter()
+{
+    countValue++; // increase this digit
+    if (countValue >= rangeN) // if reached base, wrap to 0
+    {
+        countValue = 0; // wrap-around
+        return true; // indicate wrap occurred (used by ModuloNCounter to propagate carry)
+    }
+    return false; // no wrap
+}
+
+// Print the current value of the counter
+// Function purpose: simple output for debugging or demonstration
+void ModuloNDigit::printCounter()
+{
+    cout << countValue << endl;
+}
+
+// Default constructor: keep range at 0 until set by parameterized ctor
+ModuloNDigit::ModuloNDigit()
+{
+    countValue = 0;
+    rangeN = 0;
+}
+\end{lstlisting}
+
+\section*{ModuloNCounter.h}
+\begin{lstlisting}
+/* ModuloNCounter.h - simple notes and exam hints */
+
+// ModuloNCounter: manages a multi-digit counter (OOP: composition)
+// - Uses an array of `ModuloNDigit` objects to represent digits
+// Exam notes: constructors allocate resources; copy ctor must deep-copy; destructor frees memory.
+class ModuloNCounter
+{
+public:
+    ModuloNCounter(int maxRange, int noOfDigits);
+    ModuloNCounter(const ModuloNCounter &other);
+    ~ModuloNCounter(); // Destructor: frees dynamic array (see cpp)
+
+    int rangeN; // base/range for each digit (syntax: simple member)
+    int noOfDigits; // number of digits in the counter
+    ModuloNDigit *counter; // pointer to dynamic array (pointers: holds address returned by new)
+
+    // increment: advances the counter; returns true on overall overflow
+    bool increment();
+    // print: outputs current counter representation
+    void print();
+};
+\end{lstlisting}
+
+\section*{ModuloNCounter.cpp}
+\begin{lstlisting}
+/* ModuloNCounter.cpp - implementation with exam-friendly notes */
+
+#include "ModuloNCounter.h"
+#include "ModuloNDigit.h"
+#include <iostream>
+
+using namespace std;
+
+// Character map for printing digits in bases up to 16 (strings represent digits)
+// Syntax note: this is a C-style string/array used for mapping numeric value -> character.
+char ch[] = "0123456789ABCDEF";
+
+// Constructor: initializes counter array with specified range and digits
+// OOP note: allocates dynamic array of `ModuloNDigit` (composition via pointer)
+ModuloNCounter::ModuloNCounter(int maxRange, int noOfDigits)
+{
+    rangeN = maxRange; // store base/range
+    this->noOfDigits = noOfDigits; // store digit count
+    counter = new ModuloNDigit[noOfDigits]; // allocate dynamic array (remember to delete[] in destructor)
+    for (int i = 0; i < noOfDigits; i++)
+    {
+        counter[i] = ModuloNDigit(rangeN); // initialize each digit with same range
+    }
+}
+
+// Destructor: releases allocated memory for `counter`
+// Constructors/Destructors: manage resource lifecycle (RAII note: this class uses manual new/delete)
+ModuloNCounter::~ModuloNCounter()
+{
+    delete[] counter; // free dynamic memory to avoid leaks
+}
+
+// Increment the counter, checking each digit for wrap-around.
+// Loops & conditions: iterate from least-significant to most-significant and handle carry-like behavior.
+bool ModuloNCounter::increment()
+{
+    // Start from rightmost digit (index noOfDigits-1) and move left
+    for (int index = noOfDigits - 1; index >= 0; index--)
+    {
+        // incrementCounter() returns true when this digit wrapped to 0 (like a carry)
+        if (counter[index].incrementCounter())
+        {
+            if (index == 0) // leftmost digit wrapped => overall overflow
+            {
+                return true; // signal overflow to caller
+            }
+            // else continue loop to propagate carry to next digit on the left
+        }
+        else
+        {
+            break; // no wrap-around, stop propagation
+        }
+    }
+    return false; // no overall overflow
+}
+
+// Copy constructor: performs deep copy to own a separate dynamic array
+// Pointers/References note: copying pointer values would cause double-free; allocate new array instead.
+ModuloNCounter::ModuloNCounter(const ModuloNCounter &other)
+{
+    this->rangeN = other.rangeN; // copy primitive member
+    this->noOfDigits = other.noOfDigits; // copy count
+    counter = new ModuloNDigit[noOfDigits]; // allocate fresh array
+    for (int i = 0; i < noOfDigits; i++)
+    {
+        counter[i] = other.counter[i]; // copy each ModuloNDigit (calls its assignment operator)
+    }
+}
+
+// Print current counter value using `ch` mapping (no STL used here)
+// Function purpose: produce human-readable representation in configured base.
+void ModuloNCounter::print()
+{
+    for (int i = 0; i < noOfDigits; i++)
+    {
+        // Access digit value and map to character (array indexing and member access)
+        cout << ch[counter[i].countValue];
+    }
+    cout << " "; // spacing between printed values
+}
+\end{lstlisting}
+
+\section*{main.cpp}
+\begin{lstlisting}
+/* main.cpp - simple runner with exam-friendly inline notes */
+
+#include <iostream>
+#include <cstdlib>
+#include "ModuloNCounter.h"
+
+using namespace std;
+
+int main()
+{
+    // `setvbuf` used to disable stdout buffering for immediate console output
+    setvbuf(stdout, NULL, _IONBF, 0);
+    int noOfDigits, typeOfCounter;
+
+    // Main interactive loop - demonstrates program flow, input and loops
+    while (true)
+    {
+        cout << endl << endl << "Please enter the parameters of your counter:" << endl;
+
+        cout << "number of digits: ";
+        cin >> noOfDigits; // user input (no validation here)
+
+        cout << "type (2/8/10/16): ";
+        cin >> typeOfCounter; // base of counter (syntax: integer variable)
+
+        // Print human-readable description of chosen base
+        cout << noOfDigits << " digit ";
+        if (typeOfCounter == 2)
+            cout << "binary counter";
+        else if (typeOfCounter == 8)
+            cout << "octal counter";
+        else if (typeOfCounter == 10)
+            cout << "decimal counter";
+        else if (typeOfCounter == 16)
+            cout << "hexadecimal counter";
+        cout << endl;
+
+        // Initialize the counter object (calls constructor)
+        ModuloNCounter myCounter = ModuloNCounter(typeOfCounter, noOfDigits);
+
+        // Compute number of states: base^digits using a loop (avoid pow to keep it simple)
+        int maxCounterValue = 1;
+        for (int i = 0; i < noOfDigits; i++)
+        {
+            // Loop and arithmetic: repeated multiplication produces base^digits
+            maxCounterValue *= typeOfCounter;
+        }
+
+        // Iterate and print counter values; note: +2 shows wrap-around examples
+        for (int i = 0; i < maxCounterValue + 2; i++)
+        {
+            if (i % typeOfCounter == 0)
+                cout << endl; // formatting: new line every `typeOfCounter` prints
+            myCounter.print(); // prints current value
+            myCounter.increment(); // advance counter (may cause wrap)
+        }
+
+    }
+
+    return 0; // program never reaches here due to infinite loop
+}
+\end{lstlisting}
+
+\end{document}
