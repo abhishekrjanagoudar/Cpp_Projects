@@ -28,8 +28,6 @@ public:
 	FieldState board[8][8];
 
 	// Constructor: sets up initial board pieces.
-	// Constructor/Destructor note: constructors initialize objects; destructors
-	// free resources (none needed here).
 	ReversiBoard();
 
 	// Destructor (no special cleanup required for this simple class).
