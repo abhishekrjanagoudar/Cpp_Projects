@@ -25,7 +25,7 @@ public:
 	//Required Methods
 	Vehicle(int id, const std::string& name);
 	void display() const;
-	void rentvehicle();
+	void rentVehicle();
 	void returnVehicle();
 	int getId() const;
 	std::string getName() const;

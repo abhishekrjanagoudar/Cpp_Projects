@@ -1,4 +1,4 @@
-/*
+	/*
  * Vehicle.cpp
  *
  *  Created on: 20 May 2026
@@ -19,7 +19,7 @@ void Vehicle::display() const
 	std::cout << "ID: " << vehicleId << '\n' << "Name: " << vehicleName << '\n' << "Rent Status: " << isRented << '\n';
 }
 
-void Vehicle::rentvehicle()
+void Vehicle::rentVehicle()
 {
 	if (isRented == true)
 	{

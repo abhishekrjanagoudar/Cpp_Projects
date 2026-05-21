@@ -35,6 +35,7 @@ public:
      * @param the customer record number
      */
     Customer(unsigned int number);
+    virtual ~Customer();
 
     /**
      * Returns the customer number.
