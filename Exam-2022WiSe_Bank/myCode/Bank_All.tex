@@ -1,23 +1,23 @@
-
 % Bank_All.tex - Combined source listing for Exam-2022WiSe_Bank/myCode
-\documentclass[11pt]{article}
+\documentclass[9pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[a4paper,top=0.2in,bottom=0.2in,left=0.3in,right=0.3in]{geometry}
 \usepackage{xcolor}
 \usepackage{courier}
 \usepackage{listings}
 \usepackage{hyperref}
-
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{1pt}{1pt}
 % Color scheme
 \definecolor{kwcolor}{RGB}{0,0,180}
 \definecolor{commentcolor}{RGB}{0,120,0}
 \definecolor{stringcolor}{RGB}{180,0,0}
 \definecolor{bg}{RGB}{248,248,248}
-
 \lstset{
   backgroundcolor=\color{bg},
   language=C++,
-  basicstyle=\footnotesize\ttfamily,
+  basicstyle=\scriptsize\ttfamily,
+  lineskip=-1.5pt,
   keywordstyle=\color{kwcolor}\bfseries,
   commentstyle=\color{commentcolor}\itshape,
   stringstyle=\color{stringcolor},
@@ -34,517 +34,160 @@
 
 \begin{document}
 
-\begin{center}
-  {\LARGE Bank - Combined Source Listing}
-  \\\[6pt]
-    % file list generated from myCode
-\end{center}
-\vspace{1pt}
-
-\section*{Account.h}
-\begin{lstlisting}
-/*
- * Account.h
- *
- *  Created on: 29.01.2023
- *      Author: mnl
- */
-
-#ifndef ACCOUNT_H_
-#define ACCOUNT_H_
-
-#include <string>
-#include <Poco/JSON/Object.h>
-#include "Bank.h"
-
-class Customer;
-
-/**
- * Base class for all Accounts. Accounts have an id which is assigned
- * upon creation as follows:
- *
- *  * The first digit indicated the account type
- *    - 1: Current account
- *    - 2: Savings account
- *    - 3: Certificate of deposit account
- *
- *  * The second and third digit represent a counter (sequence number)
- *    for the number of accounts of a given type. Counting starts with 1.
- *
- *  * The remaining 8 digits are the same as the 8 rightmost digits
- *    of the customer id.
- */
-class Account {
-private:
-  std::string id;
-  float balance = 0;
-
-protected:
-  /**
-   * Initializes a new account.
-   *
-   * To evaluate the account id, the method uses the type
-   * passed as argument (becomes the leftmost digit). In
-   * addition, it searches through the existing accounts
-   * of the customer in order to find the next free sequence
-   * number for creating an account of the desired type.
-   *
-   * Note that finding the next free sequence number ins't trivial.
-   * Imaging that you have created accounts with ids
-   * 3010000001, 3020000001, 3030000001. Then the second account
-   * is deleted, leaving accounts 3010000001, 3030000001. If you
-   * create a new account of type "3", you'll have to detect that
-   * sequence number "02" is not used and create 3020000001 as
-   * new id.
-   *
-   * @param customer the customer for which an account is to be created
-   * @param type the account type
-   */
-  Account(Customer* customer, Bank::AccountType type);
-
-  /**
-   * Sets the field "accountType" of the JSON object.
-   *
-   * @return the object for method invocation chaining
-   */
-  virtual Poco::JSON::Object&
-    setAccountType(Poco::JSON::Object& obj) const = 0;
-
-public:
-  /**
-   * Given an account id, extract and return the account type.
-   *
-   * @param accountId the account id
-   * @return the account type
-   * @throws invalid_argument exception if the type cannot
-   * be derived from the id.
-   */
-  static Bank::AccountType accountType(std::string accountId);
-
-  /**
-   * Defined because this a a base class, does nothing.
-   */
-  virtual ~Account();
-
-  /**
-   * Returns the id of the account.
-   */
-  std::string getId() const;
-
-  /**
-   * Returns the current balance.
-   *
-   * @return the balance
-   */
-  float getBalance() const;
-
-  /**
-   * Combined method for deposit (positiv amount) and
-   * withdraw (negative amount).
-   *
-   * @param amount the amount to add to or subtract from the balance
-   */
-  void transact(float amount);
-
-  /**
-   * Creates a JSON Object that represents the account data.
-   * Fields are "accountType" and "balance", e.g.:
-   * {"accountType":"Current","balance":100}
-   */
-  Poco::JSON::Object::Ptr toJson() const;
-};
-
-#endif /* ACCOUNT_H_ */
-
-\end{lstlisting}
 
 \section*{Account.cpp}
 \begin{lstlisting}
 #include "Account.h"
 #include "Customer.h"
-
 Account::Account(Customer* customer, Bank::AccountType type)
 {
-  // Get full customer ID
-  std::string customerId = customer->getId();
-
-  // Take last 8 digits
-  std::string customerSuffix = customerId.substr(3, 7);
-
-  // Store account type digit
-  std::string typeDigit;
-
-  // Determine type digit
-  if (type == Bank::Current)
-  {
-    typeDigit = "1";
-  }
-  else if (type == Bank::Savings)
-  {
-    typeDigit = "2";
-  }
-  else
-  {
-    typeDigit = "3";
-  }
-
-  // Temporary fixed sequence number
-  std::string sequence = "01";
-
-  // Final account ID
-  id = typeDigit + sequence + customerSuffix;
+    std::string customerId = customer->getId();
+    std::string customerSuffix = customerId.substr(3, 7);
+    std::string typeDigit;
+    if (type == Bank::Current)
+    {
+        typeDigit = "1";
+    }
+    else if (type == Bank::Savings)
+    {
+        typeDigit = "2";
+    }
+    else
+    {
+        typeDigit = "3";
+    }
+    std::string sequence = "01";
+    id = typeDigit + sequence + customerSuffix;
 }
-
 Bank::AccountType Account::accountType(std::string accountId) {
-  char typeDigit = accountId[0];
-
-  if (typeDigit == '1'){
-    return Bank::Current;
-  }
-
-  else if (typeDigit == '2'){
-    return Bank::Savings;
-  }
-
-  else if (typeDigit == '3'){
-    return Bank::CD;
-  }
-
-  // Invalid account type
-  throw std::invalid_argument("Invalid account ID");
-
+    char typeDigit = accountId[0];
+    if (typeDigit == '1'){
+        return Bank::Current;
+    }
+    else if (typeDigit == '2'){
+        return Bank::Savings;
+    }
+    else if (typeDigit == '3'){
+        return Bank::CD;
+    }
+    throw std::invalid_argument("Invalid account ID");
 }
-
-Account::~Account() {
-}
-
-std::string Account::getId() const {
-  return id;
-}
-
-float Account::getBalance() const {
-  return balance;
-}
-
 void Account::transact(float amount) {
-  balance = balance + amount;
+    balance = balance + amount;
 }
-
 Poco::JSON::Object::Ptr Account::toJson() const {
-  // Create JSON object
-  Poco::JSON::Object::Ptr obj = new Poco::JSON::Object;
-
-  // Set account type using polymorphism
-  setAccountType(*obj);
-
-  // Add balance field
-  obj->set("balance", balance);
-
-  // Return JSON object
-  return obj;
+    Poco::JSON::Object::Ptr obj = new Poco::JSON::Object;
+    setAccountType(*obj);
+    obj->set("balance", balance);
+    return obj;
 }
-
-\end{lstlisting}
-
-\section*{Bank.h}
-\begin{lstlisting}
-/*
- * Bank.h
- *
- *  Created on: 29.01.2023
- *      Author: mnl
- */
-
-#ifndef BANK_H_
-#define BANK_H_
-
-#include <memory>
-#include <map>
-#include <vector>
-
-class Customer;
-
-/**
- * Represents the Bank. In the scope of this exercise, the properties
- * of the bank are reduced to "a bank has customers".
- */
-class Bank {
-private:
-  /** The number of the next customer that is created by an
-   * invocation of #createCustomer() */
-  unsigned int nextCustomerNumber = 1;
-
-  /** The customer directory. Customers are stored by their id. */
-  std::map<std::string, std::unique_ptr<Customer>> customers;
-
-public:
-  /**
-   * The account types offered by the bank (in alphabetical order).
-   */
-  enum AccountType { CD, Current, Savings };
-
-  /**
-   * Creates a new customer, assigning it the next available id
-   * (see #nextCustomerId). The customer is added to the customer
-   * directory (see #customers).
-   */
-  Customer* createCustomer();
-
-  /**
-   * Looks up a customer in the customer directory by its id.
-   *
-   * @param id the customer id
-   * @return a pointer to the customer or nullptr if no customer
-   * with this id exists
-   */
-  Customer* lookupCustomer(std::string id) const;
-
-  /**
-   * Returns pointers to all customers of the bank.
-   *
-   * @return the customers
-   */
-  std::vector<Customer*> allCustomers() const;
-
-};
-
-#endif /* BANK_H_ */
-
 \end{lstlisting}
 
 \section*{Bank.cpp}
 \begin{lstlisting}
 #include "Bank.h"
 #include "Customer.h"
-
 Customer* Bank::createCustomer()
 {
-
-  // Create customer
-  auto customer = std::make_unique<Customer>(nextCustomerNumber);
-
-  // Get customer ID
-  std::string id = customer->getId();
-
-  // Get raw pointer
-  Customer *rawPtr = customer.get();
-
-  // Move ownership into map
-  customers.insert({id, std::move(customer)});
-
-  // Increment ID counter
-  nextCustomerNumber++;
-
-  // Return observer pointer
-  return rawPtr;
+    auto customer = std::make_unique<Customer>(nextCustomerNumber);
+    std::string id = customer->getId();
+    Customer *rawPtr = customer.get();
+    customers.insert({id, std::move(customer)});
+    nextCustomerNumber++;
+    return rawPtr;
 }
-
 Customer* Bank::lookupCustomer(std::string id) const {
-
-  // Find customer in map
-  auto it = customers.find(id);
-
-  // If found
-  if (it != customers.end()){
-
-    // Return raw pointer
-    return it->second.get();
-  }
-
-  // Not found
-  return nullptr;
+    auto it = customers.find(id);
+    if (it != customers.end()){
+        return it->second.get();
+    }
+    return nullptr;
 }
-
 std::vector<Customer*> Bank::allCustomers() const
 {
-  // Store all customer pointers
-  std::vector<Customer*> result;
-
-  // Loop through map
-  for (const auto& pair : customers)
-  {
-    // Add raw pointer to vector
-    result.push_back(pair.second.get());
-  }
-
-  // Return vector
-  return result;
+    std::vector<Customer*> result;
+    for (const auto& pair : customers)
+    {
+        result.push_back(pair.second.get());
+    }
+    return result;
 }
-
 \end{lstlisting}
 
-\section*{Customer.h}
+\section*{Customer.cpp}
 \begin{lstlisting}
-/*
- * Customer.h
- *
- *  Created on: 29.01.2023
- *      Author: mnl
- */
-
 #include "Customer.h"
 #include "Account.h"
 #include "CurrentAccount.h"
 #include "SavingsAccount.h"
 #include "CDAccount.h"
-
 #include <stdexcept>
-
 Customer::Customer(unsigned int number) : number(number)
 {
 }
-
-Customer::~Customer() {}
-
-unsigned int Customer::getNumber() const
-{
-    // Return customer number
-    return number;
-}
-
-std::string Customer::getId() const
-{
-    // Convert number to string
-    std::string id = std::to_string(number);
-
-    // Calculate required zeros
-    int needed_zeros = 10 - id.length();
-
-    // Create final padded ID
-    std::string customerId = std::string(needed_zeros, '0') + id;
-
-    // Return customer ID
-    return customerId;
-}
-
 Customer* Customer::setPersonalData(std::string lastName,
         std::string firstName,
         Poco::Data::Date dateOfBirth)
 {
-    // Store last name
     this->lastName = lastName;
-
-    // Store first name
     this->firstName = firstName;
-
-    // Store DOB
     this->dateOfBirth = dateOfBirth;
-
-    // Return current object pointer
     return this;
 }
-
-const Poco::Data::Date& Customer::getDateOfBirth() const
-{
-    // Return DOB
-    return dateOfBirth;
-}
-
-const std::string& Customer::getFirstName() const
-{
-    // Return first name
-    return firstName;
-}
-
-const std::string& Customer::getLastName() const
-{
-    // Return last name
-    return lastName;
-}
-
 Account* Customer::lookupAccount(std::string id) const
 {
-    // Search account in map
     auto it = accounts.find(id);
-
-    // If account found
     if (it != accounts.end())
     {
-        // Return raw pointer
         return it->second.get();
     }
-
-    // Account not found
     throw std::invalid_argument("Account does not exist");
 }
-
 std::vector<Account*> Customer::allAccounts() const
 {
-    // Vector for raw pointers
     std::vector<Account*> result;
-
-    // Loop through accounts map
     for (const auto& pair : accounts)
     {
-        // Add raw pointer to vector
         result.push_back(pair.second.get());
     }
-
-    // Return vector
     return result;
 }
-
 Account* Customer::createAccount(Bank::AccountType type)
 {
-    // Smart pointer for polymorphic object
     std::unique_ptr<Account> account;
-
-    // Create Current account
     if (type == Bank::Current)
     {
         account = std::make_unique<CurrentAccount>(this);
     }
-
-    // Create Savings account
     else if (type == Bank::Savings)
     {
         account = std::make_unique<SavingsAccount>(this);
     }
-
-    // Create CD account
     else
     {
         account = std::make_unique<CDAccount>(this);
     }
-
-    // Get raw observer pointer
     Account* rawPtr = account.get();
-
-    // Get generated account ID
     std::string id = account->getId();
-
-    // Move ownership into map
     accounts.insert({id, std::move(account)});
-
-    // Return observer pointer
     return rawPtr;
 }
-
 void Customer::deleteAccount(std::string id)
 {
-    // Search account
     auto it = accounts.find(id);
-
-    // Account not found
     if (it == accounts.end())
     {
         throw std::invalid_argument("Account does not exist");
     }
-
-    // Balance must be zero
     if (it->second->getBalance() != 0)
     {
         throw std::logic_error("Account balance is not zero");
     }
-
-    // Delete account using iterator
     accounts.erase(it);
 }
-
 std::ostream& operator<<(std::ostream& out,
         const Customer& customer)
 {
-    // Write customer data
     out << customer.getId()
         << ": "
         << customer.getLastName()
@@ -557,386 +200,33 @@ std::ostream& operator<<(std::ostream& out,
         << "."
         << customer.getDateOfBirth().year()
         << ")";
-
-    // Return stream
     return out;
 }
-    const Poco::Data::Date& getDateOfBirth() const;
-
-    /**
-     * Returns the first name.
-     */
-    const std::string& getFirstName() const;
-
-    /**
-     * Returns the last name.
-     */
-    const std::string& getLastName() const;
-
-    /**
-     * Create a new account of the given type for the customer.
-     *
-     * @param type the account type
-     */
-    Account* createAccount(Bank::AccountType type);
-
-    /**
-     * Returns a list of all accounts of the user
-     *
-     * @return vector of pointers to all accounts
-     */
-    std::vector<Account*> allAccounts() const;
-
-    /**
-     * Return the account with the given id.
-     *
-     * @throws invalid_argument exception if an account with
-     * the given id does not exist
-     */
-    Account* lookupAccount(std::string id) const;
-
-    /**
-     * Delete the account with the given id if its balance is 0.
-     *
-     * Implementation hint: in order to avoid searching through
-     * the accounts twice, the implementation must use
-     * an iterator for searching and erasing the account.
-     *
-     * @param id the account id
-     * @throws invalid_argument if an account with the given id
-     * does not exist
-     * @throws logic_error if the balance of the account is not 0
-     */
-    void deleteAccount (std::string id);
-};
-
-/**
- * Writes a customer's personal data to the stream as
- *
- * <id>: <lastName>, <firstName> (<dateOfBirth>)
- *
- * <dateOfBirth> may have English or German format, no zero-padding required.
- *
- * Example:
- * 0000000001: Angel, Alice (1.1.1991)
- */
-std::ostream& operator<< (std::ostream& out, const Customer& customer);
-
-#endif /* CUSTOMER_H_ */
-
-\end{lstlisting}
-
-\section*{Customer.cpp}
-\begin{lstlisting}
-
-#include "Customer.h"
-#include "Account.h"
-
-Customer::Customer(unsigned int number) : number(number) {}
-
-unsigned int Customer::getNumber() const {
-    return number;
-}
-
-std::string Customer::getId() const {
-    std::string id = std::to_string(number);
-    int needed_zeros = 10 - id.length();
-    std::string customerId = std::string(needed_zeros, '0') + id;
-
-    return customerId;
-
-}
-
-Customer* Customer::setPersonalData(std::string lastName, std::string firstName,
-        Poco::Data::Date dateOfBirth) {
-    this->lastName = lastName;
-    this->firstName = firstName;
-    this->dateOfBirth = dateOfBirth;
-
-    return this;
-}
-
-const Poco::Data::Date& Customer::getDateOfBirth() const {
-    return dateOfBirth;
-}
-
-const std::string& Customer::getFirstName() const {
-    return firstName;
-}
-
-const std::string& Customer::getLastName() const {
-    return lastName;
-}
-
-Account* Customer::lookupAccount(std::string id) const
-{
-    // Search account in map
-    auto it = accounts.find(id);
-
-    // If account found
-    if (it != accounts.end())
-    {
-        // Return raw pointer
-        return it->second.get();
-    }
-
-    // Account not found
-    throw std::invalid_argument("Account does not exist");
-}
-
-std::vector<Account*> Customer::allAccounts() const
-{
-    // Vector to store raw pointers
-    std::vector<Account*> result;
-
-    // Loop through accounts map
-    for (const auto& pair : accounts)
-    {
-        // Add raw pointer to vector
-        result.push_back(pair.second.get());
-    }
-
-    // Return vector
-    return result;
-}
-
-Account* Customer::lookupAccount(std::string id) const
-{
-    // Search account in map
-    auto it = accounts.find(id);
-
-    // If account found
-    if (it != accounts.end())
-    {
-        // Return raw pointer
-        return it->second.get();
-    }
-
-    // Account not found
-    throw std::invalid_argument("Account does not exist");
-}
-
-void Customer::deleteAccount(std::string id)
-{
-    // Search account
-    auto it = accounts.find(id);
-
-    // Account not found
-    if (it == accounts.end())
-    {
-        throw std::invalid_argument("Account does not exist");
-    }
-
-    // Balance must be zero
-    if (it->second->getBalance() != 0)
-    {
-        throw std::logic_error("Account balance is not zero");
-    }
-
-    // Delete account
-    accounts.erase(it);
-}
-
-std::ostream& operator<<(std::ostream& out, const Customer& customer)
-{
-    out << customer.getId()
-        << ": "
-        << customer.getLastName()
-        << ", "
-        << customer.getFirstName()
-        << " ("
-        << customer.getDateOfBirth().day()
-        << "."
-        << customer.getDateOfBirth().month()
-        << "."
-        << customer.getDateOfBirth().year()
-        << ")";
-
-    return out;
-}
-
-Account* Customer::createAccount(Bank::AccountType type) {
-}
-
-\end{lstlisting}
-
-\section*{CDAccount.h}
-\begin{lstlisting}
-/*
- * CDAccount.h
- *
- *  Created on: 29.01.2023
- *      Author: mnl
- */
-
-#ifndef CDACCOUNT_H_
-#define CDACCOUNT_H_
-
-#include "Account.h"
-
-class Customer;
-
-class CDAccount : public Account {
-
-public:
-  /**
-   * Initializes a new account.
-   *
-   * @param customer the customer for which an account is to be created
-   */
-  CDAccount(Customer* customer);
-
-  /**
-   * Sets the field "accountType" of the object to "CD".
-   *
-   * @return the object for method invocation chaining
-   */
-  Poco::JSON::Object& setAccountType(Poco::JSON::Object& obj) const;
-};
-
-#endif /* CDACCOUNT_H_ */
-
 \end{lstlisting}
 
 \section*{CDAccount.cpp}
 \begin{lstlisting}
 #include "CDAccount.h"
-
 CDAccount::CDAccount(Customer *customer)  : Account(customer , Bank::CD) {
 }
-
 Poco::JSON::Object& CDAccount::setAccountType(Poco::JSON::Object &obj) const {
-  obj.set("accountType" , "CD Account");
-  return obj;
+    obj.set("accountType" , "CD Account");
+    return obj;
 }
-
-\end{lstlisting}
-
-\section*{CurrentAccount.h}
-\begin{lstlisting}
-/*
- * CurrentAccount.h
- *
- *  Created on: 29.01.2023
- *      Author: mnl
- */
-
-#ifndef CURRENTACCOUNT_H_
-#define CURRENTACCOUNT_H_
-
-#include <string>
-#include "Account.h"
-
-class Customer;
-
-class CurrentAccount : public Account {
-
-public:
-  /**
-   * Initializes a new account.
-   *
-   * @param customer the customer for which an account is to be created
-   */
-  CurrentAccount(Customer* customer);
-
-  /**
-   * Sets the field "accountType" of the object to "Current".
-   *
-   * @return the object for method invocation chaining
-   */
-  Poco::JSON::Object& setAccountType(Poco::JSON::Object& obj) const;
-};
-
-#endif /* CURRENTACCOUNT_H_ */
-
-\end{lstlisting}
-
-\section*{CurrentAccount.cpp}
-\begin{lstlisting}
-#include "CurrentAccount.h"
-
-CurrentAccount::CurrentAccount(Customer *customer) : Account(customer , Bank::Current) {
-}
-
-Poco::JSON::Object& CurrentAccount::setAccountType(
-    Poco::JSON::Object &obj) const {
-  obj.set("accountType" , "Current Account");
-  return obj;
-}
-
-\end{lstlisting}
-
-\section*{SavingsAccount.h}
-\begin{lstlisting}
-/*
- * SavingsAccount.h
- *
- *  Created on: 29.01.2023
- *      Author: mnl
- */
-
-#ifndef SAVINGSACCOUNT_H_
-#define SAVINGSACCOUNT_H_
-
-#include "Account.h"
-
-class Customer;
-
-class SavingsAccount : public Account {
-
-public:
-  /**
-   * Initializes a new account.
-   *
-   * @param customer the customer for which an account is to be created
-   */
-  SavingsAccount(Customer* customer);
-
-  /**
-   * Sets the accountType field of the object to "Savings".
-   *
-   * @param obj the object to modify
-   * @return the object for method invocation chaining
-   */
-  Poco::JSON::Object& setAccountType(Poco::JSON::Object& obj) const;
-};
-
-#endif /* SAVINGSACCOUNT_H_ */
-
-\end{lstlisting}
-
-\section*{SavingsAccount.cpp}
-\begin{lstlisting}
-#include "SavingsAccount.h"
-
-SavingsAccount::SavingsAccount(Customer *customer) : Account(customer , Bank::Savings) {}
-
-Poco::JSON::Object& SavingsAccount::setAccountType(
-    Poco::JSON::Object &obj) const {
-  obj.set("accountType" , "Savings Account");
-  return obj;
-}
-
 \end{lstlisting}
 
 \section*{main.cpp}
 \begin{lstlisting}
-// Standard (system) header files
 #include <iostream>
 #include <stdlib.h>
-
 using namespace std;
-
-// Main program
 int main (void)
 {
-  cout << "<Janagoudar>, <Abhishek>, <1134273>" << endl << endl;
-    
-  extern void allTests();
-  allTests();
-  return 0;
+    cout << "<Janagoudar>, <Abhishek>, <1134273>" << endl << endl;
+    extern void allTests();
+    allTests();
+    return 0;
 }
-
 \end{lstlisting}
 
 \section*{tests.cpp}
@@ -945,158 +235,30 @@ int main (void)
 #include <sstream>
 #include <set>
 #include <Poco/JSON/Stringifier.h>
-
 using namespace std;
-
 #include "Bank.h"
 #include "Customer.h"
 #include "Account.h"
 #include "CurrentAccount.h"
 #include "SavingsAccount.h"
 #include "CDAccount.h"
-
-/**
- * Outputs the failedMessage on the console if condition is false.
- *
- * @param condition the condition
- * @param failedMessage the message
- */
 void assertTrue(bool condition, string failedMessage) {
-  if (!condition) {
-    cout << failedMessage << endl;
-  }
+    if (!condition) {
+        cout << failedMessage << endl;
+    }
 }
-
-/**
- * Initializes a bank with customers with different account
- * types. Can be used as data for various tests.
- */
 void setupBank(Bank& bank) {
-  // The following code has been commented out to keep
-  // the start project buildable. Remove the comments
-  // when you have implemented the required methods.
-
-  /********* reactivate later *********
-  Customer* c = bank.createCustomer()->setPersonalData
-      ("Angel", "Alice", Poco::Data::Date(1991, 1, 1));
-  c->createAccount(Bank::AccountType::Current)->transact(100);
-  c->createAccount(Bank::AccountType::Savings)->transact(500);
-  c->createAccount(Bank::AccountType::CD)->transact(1000);
-  c->createAccount(Bank::AccountType::CD)->transact(2000);
-  c->createAccount(Bank::AccountType::CD)->transact(3000);
-  bank.createCustomer()->setPersonalData
-      ("Billings", "Bob", Poco::Data::Date(1992, 2, 2));
-  bank.createCustomer()->setPersonalData
-      ("Chase", "Caesar", Poco::Data::Date(1993, 3, 3));
-  ************************************/
 }
-
 void bankTests () {
-  /**
-   * Create a bank and initialize it with setupBank.
-   */
-  // Add your code here:
-
-  /*
-   * (1) Assert that the bank has three customers.
-   */
-  // Add your code here:
-
-   /*
-  * (2) Assert that the customer with id 0000000002 can be looked up.
-  */
-  // Add your code here:
-
-   /*
-  * (3) Assert that there is no customer with id 0000000042.
-  */
-  // Add your code here:
-
 }
-
 void customerTests () {
-  /*
-   * (1) Create a Customer with sample data. Assert that
-   * invoking the overloaded left shift operator produces the
-   * expected result. (Hint: use a stringstream.)
-   */
-  // Add your code here:
-
 }
-
 void accountTests () {
-  /**
-   * Create a bank and initialize it with setupBank.
-   */
-  // Add your code here:
-
-  /*
-   * (1) Lookup Customer 0000000001 (Alice), assert that she is found.
-   */
-  // Add your code here:
-
-  /*
-   * (2) Assert that Alice has 5 accounts.
-   */
-  // Add your code here:
-
-  /**
-   * (3) Assert that the C++-types of Alice's accounts and the
-   * types derived from the account id (see Account::accountType)
-   * match.
-   */
-  // Add your code here:
-
-  /**
-   * (4) Assert that Alice has 3 accounts of type CD
-   * and that these accounts have the ids "3010000001",
-   * "3020000001" and "3030000001". The check must not
-   * rely on accounts being returned in a specific sequence.
-   *
-   * In order to check this, proceed as follows:
-   *  * Obtain the ids
-   *  * Filter out the CD accounts and count them
-   *  * Out the ids in a set and assert that the set contains
-   *    the expected ids.
-   */
-  // Add your code here:
-
-  /**
-   * (5) Assert that an attempt to delete account 3040000001
-   * throws an invalid_argument exception.
-   */
-  // Add your code here:
-
-   /**
-    * (6) Assert that an attempt to delete account 3020000001
-    * throws a logic_error exception.
-    */
-  // Add your code here:
-
-    /**
-     * (7) Withdraw the deposit from account 3010000001,
-     * delete the account and assert that Alice has only
-     * 4 accounts left
-     */
-  // Add your code here:
-
-    /**
-     * (8) Lookup Alice's account 1010000001, create
-     * the JSON object representing its data and assert
-     * that the account type is "Current" and the balance
-     * is 100.
-     */
-  // Add your code here:
-
 }
-
 void allTests() {
-  bankTests();
-  customerTests();
-  accountTests();
+    bankTests();
+    customerTests();
+    accountTests();
 }
-
 \end{lstlisting}
-
 \end{document}
-
