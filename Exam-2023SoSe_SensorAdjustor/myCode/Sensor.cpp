@@ -8,7 +8,10 @@ std::string Sensor::getName() const {
     return name;
 }
 
+Sensor::Sensor(const std::string &name, std::shared_ptr<Adjuster> adjuster) : name(name) , adjuster(adjuster)
+{
+}
+
 float Sensor::reading() const {
-    // TODO, dummy implementation
-    return 0;
+    return adjuster->adjust(rawReading());
 }

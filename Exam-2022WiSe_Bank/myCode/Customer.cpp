@@ -6,9 +6,7 @@
 
 #include <stdexcept>
 
-Customer::Customer(unsigned int number) : number(number)
-{
-}
+Customer::Customer(unsigned int number) : number(number) {}
 
 Customer::~Customer() {}
 
@@ -68,38 +66,6 @@ const std::string& Customer::getLastName() const
 	return lastName;
 }
 
-Account* Customer::lookupAccount(std::string id) const
-{
-	// Search account in map
-	auto it = accounts.find(id);
-
-	// If account found
-	if (it != accounts.end())
-	{
-		// Return raw pointer
-		return it->second.get();
-	}
-
-	// Account not found
-	throw std::invalid_argument("Account does not exist");
-}
-
-std::vector<Account*> Customer::allAccounts() const
-{
-	// Vector for raw pointers
-	std::vector<Account*> result;
-
-	// Loop through accounts map
-	for (const auto& pair : accounts)
-	{
-		// Add raw pointer into vector
-		result.push_back(pair.second.get());
-	}
-
-	// Return vector
-	return result;
-}
-
 Account* Customer::createAccount(Bank::AccountType type)
 {
 	// Smart pointer for polymorphic object
@@ -135,6 +101,39 @@ Account* Customer::createAccount(Bank::AccountType type)
 	// Return observer pointer
 	return rawPtr;
 }
+
+std::vector<Account*> Customer::allAccounts() const
+{
+	// Vector for raw pointers
+	std::vector<Account*> result;
+
+	// Loop through accounts map
+	for (const auto& pair : accounts)
+	{
+		// Add raw pointer into vector
+		result.push_back(pair.second.get());
+	}
+
+	// Return vector
+	return result;
+}
+
+Account* Customer::lookupAccount(std::string id) const
+{
+	// Search account in map
+	auto it = accounts.find(id); //this means account id
+
+	// If account found
+	if (it != accounts.end())
+	{
+		// Return raw pointer
+		return it->second.get();
+	}
+
+	// Account not found
+	throw std::invalid_argument("Account does not exist");
+}
+
 
 void Customer::deleteAccount(std::string id)
 {

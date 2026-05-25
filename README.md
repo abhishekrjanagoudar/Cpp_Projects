@@ -10,20 +10,21 @@
     <img src="https://img.shields.io/badge/Status-Work%20In%20Progress-F39C12?style=for-the-badge" alt="Status badge" />
 </p>
 
-This repository contains previous-year exam practice sets for the course
+This repository contains previous-year exam practice sets, lab assignments, and custom practice projects for the course
 Advanced Programming Techniques. 🎓
 
-Each exam folder includes:
-- 🧾 an incomplete C++ codebase
-- 🧪 a `tests.cpp` file describing required behavior
+Each folder generally includes:
+- 🧾 an incomplete C++ codebase or a starter skeleton
+- 🧪 a `tests.cpp` file describing required behavior (in exams)
 - 🛠️ starter `main` files and helpers
-- 📄 (sometimes) generated documentation or example outputs
+- 📄 (sometimes) generated documentation, assignment instructions, or example outputs
 
-The goal is to practice reading specs from tests, completing class designs,
-and implementing object-oriented logic under exam-style constraints. 💪
+The goal is to practice reading specs, completing class designs,
+and implementing object-oriented logic. 💪
 
 ## Repository Overview 🗂️✨
 
+### Past Exams 📑
 | Folder | Theme | What you practice |
 |---|---|---|
 | Exam-2022WiSe_Bank 🏦 | Banking domain model | OOP basics, associations, account/customer handling, exceptions, JSON output |
@@ -31,6 +32,21 @@ and implementing object-oriented logic under exam-style constraints. 💪
 | Exam-2023WiSe_ShoppingList 🛒 | Shopping and discounts | Data modeling, discount rules, database-like lookup, evaluation logic |
 | Exam-2024SoSe_Notebook 📓 | Notes/topics hierarchy | Composite-style structures, CSV serialization, tree-like ownership |
 | Exam-2024WiSe_Resistor ⚡ | Electrical resistor networks | Recursive/composite calculations, tolerances, file read/write parsing |
+
+### Lab Assignments 🔬
+| Folder | Theme | What you practice |
+|---|---|---|
+| Lab_1_Heat_Controller 🔥 | Basic C++ | Classes, header/source separation, simple logic |
+| Lab_1_Modulo_n_Counter ⏱️ | Basic OOP | Constructors, overloading, modulo arithmetic |
+| Lab_1_Reversi_Board ♟️ | 2D Arrays & Game Logic | Arrays, pointers, boundary checking |
+| Lab_2_BattleShip 🚢 | Game Architecture | Multi-class design, console UI, logical decoupling |
+| Lab_3_StudentDb 🎓 | Student Database | Database design, CRUD operations, strings, memory management |
+
+### Practice Projects 🚀
+| Folder | Theme | What you practice |
+|---|---|---|
+| Student Management System Practice 🏫 | System Design | Larger scale OOP, entity relationships |
+| Vehicle Rental Practicce 🚗 | Business Logic | Polymorphism, pricing logic, inventory management |
 
 ## Recommended Study Order (Easiest -> Hardest) 🎯🔢
 
@@ -83,6 +99,13 @@ Use this checklist to track progress.
 - [ ] 🗂️ Complete note/topic/notebook base behavior
 - [ ] 🔁 Verify parent-child item handling
 - [ ] 📂 Complete CSV save/load round-trip tests
+
+### Labs & Practice Projects 🔬🚀
+- [ ] 🔥 Complete Lab 1 sections (Heat Controller, Modulo Counter, Reversi)
+- [ ] 🚢 Build the BattleShip game architecture (Lab 2)
+- [ ] 🎓 Implement the Student Database CRUD functions (Lab 3)
+- [ ] 🏫 Finish Student Management System Practice
+- [ ] 🚗 Finish Vehicle Rental Practice
 
 ## Notes 🧠💬
 

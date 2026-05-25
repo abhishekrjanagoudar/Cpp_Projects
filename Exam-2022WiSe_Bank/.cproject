@@ -74,4 +74,5 @@
 			<resource resourceType="PROJECT" workspacePath="/Exam-2022WiSe_Bank"/>
 		</configuration>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>
