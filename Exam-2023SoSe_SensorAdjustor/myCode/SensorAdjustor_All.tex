@@ -36,6 +36,75 @@
 
 \begin{document}
 
+\section*{C++ Symbols \& Syntax}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{\texttt{::}} Access class statics (\texttt{Bank::AccountType}).
+    \item \textbf{\texttt{->}} Access object member via ptr (\texttt{p->m()}).
+    \item \textbf{\texttt{*}} Declares ptr OR gets value at address.
+    \item \textbf{\texttt{\&}} Declares reference OR gets address.
+    \item \textbf{\texttt{this}} Pointer to current object instance.
+    \item \textbf{\texttt{const}} Immutable; cannot modify the object.
+    \item \textbf{\texttt{virtual}} Method can be overridden by child class.
+    \item \textbf{\texttt{override}} Safely overrides a virtual method.
+    \item \textbf{\texttt{= 0}} Pure virtual method; class is abstract.
+\end{itemize}
+
+\section*{STL Containers}
+\textbf{\texttt{std::map<K,V>}} -- \textit{Sorted Key-Value Pairs}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Unique keys, fast key-based search.
+    \item \textbf{Actions}: \texttt{m[k]=v}, \texttt{m.erase(k)}
+    \item \textbf{Search}: \texttt{if(m.find(k) != m.end())}
+    \item \textbf{Iter}: \texttt{for(auto\& p : m) p.first;}
+\end{itemize}
+
+\textbf{\texttt{std::vector<T>}} -- \textit{Dynamic Array}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Fast random access \texttt{v[idx]}, contiguous.
+    \item \textbf{Actions}: \texttt{v.push\_back(val)}, \texttt{v.erase(it)}
+\end{itemize}
+
+\textbf{\texttt{std::list<T>}} -- \textit{Doubly Linked List}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Fast insert/erase anywhere, NO \texttt{v[idx]}.
+    \item \textbf{Actions}: \texttt{l.push\_back(val)}, \texttt{l.remove(val)}
+\end{itemize}
+
+\section*{Pointer Types \& Memory}
+\textbf{1. \texttt{unique\_ptr<T>}} (Exclusive)
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Auto-frees memory on scope exit. No leaks.
+    \item \textbf{Syntax}: \texttt{auto p = std::make\_unique<T>();}
+    \item \textbf{Pass}: Cannot copy. Transfer via \texttt{std::move(p)}.
+\end{itemize}
+
+\textbf{2. \texttt{shared\_ptr<T>}} (Shared)
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Ref-counted. Auto-frees when last owner dies.
+    \item \textbf{Syntax}: \texttt{auto p = std::make\_shared<T>();}
+\end{itemize}
+
+\textbf{3. Raw Pointers \texttt{T*}} (Non-owning)
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Observe existing objects. Avoid memory leaks!
+    \item \textbf{Pass}: \texttt{uptr.get()} passes raw without moving.
+\end{itemize}
+
+\section*{OOP Concepts}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Construct}: Base constructs first, then Derived.
+    \item \textbf{Destruct}: Derived destructs first, then Base.
+    \item \textbf{Polymorphism}: Base ptr runs Derived virtual method.
+\end{itemize}
+
 \section*{Adjuster.cpp}
 \begin{lstlisting}
 #include "Adjuster.h"
@@ -43,118 +112,22 @@
 Adjuster::~Adjuster() {
 }
 
-\end{lstlisting}
 
-\section*{Adjuster.h}
-\begin{lstlisting}
-#ifndef ADJUSTER_H_
-#define ADJUSTER_H_
-
-/**
- * An Adjuster provides only the method "adjust" which performs
- * the adjustment of the measured value.
- */
-class Adjuster {
-public:
-    virtual ~Adjuster();
-
-    /**
-     * Given the raw sensor reading, calculate the adjusted value.
-     */
-    virtual float adjust(float value) const = 0;
-};
-
-#endif /* ADJUSTER_H_ */
-\end{lstlisting}
-
-\section*{DuplicateSensorName.cpp}
-\begin{lstlisting}
-#include "DuplicateSensorName.h"
-\end{lstlisting}
-
-\section*{DuplicateSensorName.h}
-\begin{lstlisting}
-#ifndef DUPLICATESENSORNAME_H_
-#define DUPLICATESENSORNAME_H_
-
-#include <stdexcept>
-
-/**
- * An exception which is thrown when an attempt is made to add
- * a sensor to a network that already includes a sensor with
- * this sensor's name.
- */
-class DuplicateSensorName: public std::invalid_argument {
-public:
-    /**
-     * Initialize a new object. (2 points)
-     *
-     * @param name the sensor's (duplicate) name.
-     */
-    DuplicateSensorName(std::string sensorName);
-};
-
-#endif /* DUPLICATESENSORNAME_H_ */
 \end{lstlisting}
 
 \section*{LinearAdjuster.cpp}
 \begin{lstlisting}
 #include "LinearAdjuster.h"
 
-\end{lstlisting}
-
-\section*{LinearAdjuster.h}
-\begin{lstlisting}
-#ifndef LINEARADJUSTER_H_
-#define LINEARADJUSTER_H_
-
-#include "Adjuster.h"
-
-/**
- * This adjuster can adjust the slope of and add an offset to the
- * sensor's raw readings.
- */
-class LinearAdjuster: public Adjuster {
-private:
-    float factor;
-    float offset;
-
-public:
-    /**
-     * Initializes a new instance with the given values. (2 points)
-     */
-    LinearAdjuster(float factor = 1, float offset = 0);
-
-    /**
-     * Calculates the result as "value * factor + offset". (2 points)
-     */
-    virtual float adjust(float value) const;
-};
-
-#endif /* LINEARADJUSTER_H_ */
-\end{lstlisting}
-
-\section*{main.cpp}
-\begin{lstlisting}
-// Standard (system) header files
-#include <iostream>
-#include <stdlib.h>
-#include <fstream>
-// Add more standard header files as required
-// #include <string>
-
-using namespace std;
-
-// Main program
-int main (void)
+LinearAdjuster::LinearAdjuster(float factor, float offset) : factor(factor) , offset(offset)
 {
-    // TODO: Add your program code here
-    cout << "Student Name: ............, Matrikel-Nb: ......." << endl << endl;
-    
-    extern void allTests();
-    allTests();
-    return 0;
 }
+
+float LinearAdjuster::adjust(float value) const
+{
+	return (value*factor) + offset;
+}
+
 \end{lstlisting}
 
 \section*{NullAdjuster.cpp}
@@ -167,33 +140,74 @@ std::shared_ptr<Adjuster> NullAdjuster::sharedInstance
 float NullAdjuster::adjust(float value) const {
     return value;
 }
+
 \end{lstlisting}
 
-\section*{NullAdjuster.h}
+\section*{TableBasedAdjuster.cpp}
 \begin{lstlisting}
-#ifndef NULLADJUSTER_H_
-#define NULLADJUSTER_H_
+#include "TableBasedAdjuster.h"
 
-#include <memory>
+TableBasedAdjuster& TableBasedAdjuster::addBreakpoint(float x, float y)
+{
+	breakpoints[x] = y;
+	return *this;
+}
 
-#include "Adjuster.h"
+float TableBasedAdjuster::adjust(float value) const
+{
+    // Empty map
+    if (breakpoints.empty())
+    {
+        return value;
+    }
 
-/**
- * This adjuster returns the value unchanged. It should be used
- * for sensors that need no adjustment by design (or are already
- * adjusted by some means during manufacturing).
- */
-class NullAdjuster: public Adjuster {
-public:
-    static std::shared_ptr<Adjuster> sharedInstance;
+    // Smallest breakpoint
+    auto k_min = breakpoints.begin();
 
-    /**
-     * Given the raw sensor reading, calculate the adjusted value.
-     */
-    float adjust(float value) const;
-};
+    // Largest breakpoint
+    auto k_max = std::prev(breakpoints.end());
 
-#endif /* NULLADJUSTER_H_ */
+    // value <= k_min
+    if (value <= k_min->first)
+    {
+        float v_min = k_min->second;
+
+        return v_min - (k_min->first - value);
+    }
+
+    // value >= k_max
+    if (value >= k_max->first)
+    {
+        float v_max = k_max->second;
+
+        return v_max + (value - k_max->first);
+    }
+
+    // Adjacent breakpoints
+    auto k_n = breakpoints.begin();
+    auto k_n1 = std::next(k_n);
+
+    while (k_n1 != breakpoints.end())
+    {
+        float v_n = k_n->second;
+        float v_n1 = k_n1->second;
+
+        // k_n < value <= k_(n+1)
+        if (k_n->first < value && value <= k_n1->first)
+        {
+            return (value - k_n->first)
+                    / (k_n1->first - k_n->first)
+                    * (v_n1 - v_n)
+                    + v_n;
+        }
+
+        ++k_n;
+        ++k_n1;
+    }
+
+    return value;
+}
+
 \end{lstlisting}
 
 \section*{Sensor.cpp}
@@ -208,187 +222,69 @@ std::string Sensor::getName() const {
     return name;
 }
 
-float Sensor::reading() const {
-    // TODO, dummy implementation
-    return 0;
+Sensor::Sensor(const std::string &name, std::shared_ptr<Adjuster> adjuster) : name(name) , adjuster(adjuster)
+{
 }
+
+float Sensor::reading() const {
+    return adjuster->adjust(rawReading());
+}
+
 \end{lstlisting}
 
-\section*{Sensor.h}
+\section*{TestSensor.cpp}
 \begin{lstlisting}
-#ifndef SENSOR_H_
-#define SENSOR_H_
+#include "TestSensor.h"
 
-#include <string>
-#include <memory>
+TestSensor::TestSensor(const std::string &name,
+		std::shared_ptr<Adjuster> adjustor) : Sensor(name, adjustor)
+{
+	value = 0;
+}
 
-#include "NullAdjuster.h"
+void TestSensor::setRawReading(float value) {
+	this->value = value;
+}
 
-/**
- * The base class for modeling all kinds of sensors (temperature,
- * humidity, voltage etc.).
- *
- * This base class provides the support for sensor adjustment. Depending
- * on the type of sensor, adjusting can be more or less difficult.
- * For some sensors, it may be sufficient to add an offset and correct
- * the slope. Others may require more complex algorithms and parameters.
- * And some may be precise by design and therefore require no additional
- * adjustment at all.
- *
- * In order to be able to reflect these different scenarios, adjustment
- * is performed by an independent object of type Adjuster. The sensor
- * simply invokes the adjuster's adjust method, which can be very simple
- * or more complex, depending on the kind of adjustment required.
- *
- * Derived classes must implement the method "rawReading", which returns
- * the current (raw) sensor reading.
- */
-class Sensor {
-private:
-    std::string name;
+float TestSensor::rawReading() const
+{
+	return value;
+}
 
-protected:
-    std::shared_ptr<Adjuster> adjuster;
+\end{lstlisting}
 
-    /**
-     * Obtains the current value of the sensor as provided
-     * by the sensor's hardware.
-     *
-     * @return the value
-     */
-    virtual float rawReading() const = 0;
+\section*{DuplicateSensorName.cpp}
+\begin{lstlisting}
+#include "DuplicateSensorName.h"
 
-public:
-    /**
-     * Creates a new sensor. (2 points)
-     *
-     * @param name the name of the sensor
-     * @param adjuster the adjuster to use, defaults to
-     * the default NullAdjuster instance.
-     */
-    Sensor(const std::string& name, std::shared_ptr<Adjuster> adjuster
-            = NullAdjuster::sharedInstance);
+DuplicateSensorName::DuplicateSensorName(std::string sensorName) : std::invalid_argument(sensorName)
+{
+}
 
-    virtual ~Sensor();
-
-    /**
-     * Returns the sensor's name.
-     */
-    std::string getName() const;
-
-    /**
-     * Returns the current value reported by the sensor.
-     * The value is the raw reading obtained from the sensor's
-     * hardware with any required adjustment applied.
-     * (2 points)
-     */
-    virtual float reading() const;
-};
-
-#endif /* SENSOR_H_ */
 \end{lstlisting}
 
 \section*{SensorNetwork.cpp}
 \begin{lstlisting}
 #include "SensorNetwork.h"
 #include "DuplicateSensorName.h"
-\end{lstlisting}
 
-\section*{SensorNetwork.h}
-\begin{lstlisting}
-#ifndef SENSORNETWORK_H_
-#define SENSORNETWORK_H_
+SensorNetwork& SensorNetwork::add(std::unique_ptr<Sensor>&& sensor)
+{
+    // Check duplicates
+    for (const auto& existingSensor : sensors)
+    {
+        if (existingSensor->getName() == sensor->getName())
+        {
+            throw DuplicateSensorName(sensor->getName());
+        }
+    }
 
-#include <list>
-#include <memory>
-#include "Sensor.h"
+    // Move sensor into list
+    sensors.push_back(std::move(sensor));
 
-/**
- * Models a network of sensors.
- */
-class SensorNetwork {
-private:
-    std::list<std::unique_ptr<Sensor>> sensors;
+    return *this;
+}
 
-public:
-    /**
-     * Adds the given sensor to the network. If a sensor with
-     * the name of the sensor passed as parameter already
-     * exists in the network, throws a DuplicateSensorName
-     * exception. (11 points)
-     *
-     * @param sensor the sensor to add
-     * @throws DuplicateSensorName
-     */
-    SensorNetwork& add(std::unique_ptr<Sensor>&& sensor);
-};
-
-#endif /* SENSORNETWORK_H_ */
-\end{lstlisting}
-
-\section*{TableBasedAdjuster.cpp}
-\begin{lstlisting}
-#include "TableBasedAdjuster.h"
-
-\end{lstlisting}
-
-\section*{TableBasedAdjuster.h}
-\begin{lstlisting}
-#ifndef TABLEBASEDADJUSTER_H_
-#define TABLEBASEDADJUSTER_H_
-
-#include <map>
-
-#include "Adjuster.h"
-
-/**
- * Adjusts using values from a table. The table defines a
- * piecewise function with linear sub-functions. The breakpoints
- * (German: Nahtstellen) and values at these breakpoints are
- * stored in a map using the breakpoint values as keys and the
- * function's values at the breakpoints as values. See the
- * adjust method for details.
- */
-class TableBasedAdjuster: public Adjuster {
-private:
-    std::map<float, float> breakpoints;
-
-public:
-    /**
-     * Adds a breakpoint and the associated value of the
-     * function to the table. (3 points)
-     */
-    TableBasedAdjuster& addBreakpoint(float x, float y);
-
-    /**
-     * If map breakpoints is empty, returns the value
-     * unmodified. Else calculates an adjusted value (a)
-     * from the given un-adjusted value (u) passed as
-     * argument and the breakpoints with their associated
-     * values in the map (bp) as follows (remember that
-     * keys in a map are sorted):
-     *
-     * * Let k_min be the key in bp with the smallest value
-     *   and k_max be the key with the largest value. Let the
-     *   value associated with any key k_n be v_n.
-     *
-     * * If u <= k_min then a = v_min - (k_min - u)
-     *
-     * * If u >= k_max then a = v_max + (u - k_max)
-     *
-     * * For any two adjacent keys k_n and k_(n+1):
-     *   If k_n < u <= k_(n+1) then
-     *     a = (u - k_n) / (k_(n+1) - k_n) * (v_(n+1) - v_n) + v_n
-     *
-     * An example for a function with points (-1, -0,5)
-     * and (2, 1) is shown in the exam paper.
-     *
-     * (15 points)
-     */
-    virtual float adjust(float value) const;
-};
-
-#endif /* TABLEBASEDADJUSTER_H_ */
 \end{lstlisting}
 
 \section*{tests.cpp}
@@ -507,57 +403,31 @@ void allTests() {
     sensorTests();
     networkTests();
 }
-\end{lstlisting}
-
-\section*{TestSensor.cpp}
-\begin{lstlisting}
-#include "TestSensor.h"
 
 \end{lstlisting}
 
-\section*{TestSensor.h}
+\section*{main.cpp}
 \begin{lstlisting}
-#ifndef TESTSENSOR_H_
-#define TESTSENSOR_H_
+// Standard (system) header files
+#include <iostream>
+#include <stdlib.h>
+#include <fstream>
+// Add more standard header files as required
+// #include <string>
 
-#include "Adjuster.h"
-#include "Sensor.h"
+using namespace std;
 
-/**
- * A specialization of class Sensor for testing purposes that
- * returns a settable value as raw reading.
- */
-class TestSensor : public Sensor {
-private:
-    float value;
+// Main program
+int main (void)
+{
+    // TODO: Add your program code here
+    cout << "Student Name: ............, Matrikel-Nb: ......." << endl << endl;
+    
+    extern void allTests();
+    allTests();
+    return 0;
+}
 
-public:
-    /**
-     * Initializes a new instance with the given name and adjustor
-     * and a raw reading of 0. (3 points)
-     *
-     * @param name the name of the sensor
-     * @param adjustor the adjustor to use
-     */
-    TestSensor(const std::string& name, std::shared_ptr<Adjuster> adjustor);
-
-    /**
-     * Sets the value to return from rawReading(). (1 point)
-     *
-     * @param value the value
-     */
-    void setRawReading(float value);
-
-    /**
-     * Returns the value set with setRawReading() or 0 if no
-     * value has been set (yet). (1 point)
-     *
-     * @return the value
-     */
-    float rawReading() const;
-};
-
-#endif /* TESTSENSOR_H_ */
 \end{lstlisting}
 
 \end{document}

@@ -1,0 +1,338 @@
+% ShoppingList_All.tex - Combined source listing
+\documentclass[9pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=0.2in,bottom=0.2in,left=0.3in,right=0.3in]{geometry}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{1pt}{1pt}
+
+% Color scheme
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{commentcolor}{RGB}{0,120,0}
+\definecolor{stringcolor}{RGB}{180,0,0}
+\definecolor{bg}{RGB}{248,248,248}
+
+\lstset{
+  backgroundcolor=\color{bg},
+  language=C++,
+  basicstyle=\scriptsize\ttfamily,
+  lineskip=-1.5pt,
+  keywordstyle=\color{kwcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  stepnumber=1,
+  numbersep=8pt,
+  tabsize=4,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  captionpos=b
+}
+
+\begin{document}
+
+\section*{C++ Symbols \& Syntax}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{\texttt{::}} Access class statics (\texttt{Bank::AccountType}).
+    \item \textbf{\texttt{->}} Access object member via ptr (\texttt{p->m()}).
+    \item \textbf{\texttt{*}} Declares ptr OR gets value at address.
+    \item \textbf{\texttt{\&}} Declares reference OR gets address.
+    \item \textbf{\texttt{this}} Pointer to current object instance.
+    \item \textbf{\texttt{const}} Immutable; cannot modify the object.
+    \item \textbf{\texttt{virtual}} Method can be overridden by child class.
+    \item \textbf{\texttt{override}} Safely overrides a virtual method.
+    \item \textbf{\texttt{= 0}} Pure virtual method; class is abstract.
+\end{itemize}
+
+\section*{STL Containers}
+\textbf{\texttt{std::map<K,V>}} -- \textit{Sorted Key-Value Pairs}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Unique keys, fast key-based search.
+    \item \textbf{Actions}: \texttt{m[k]=v}, \texttt{m.erase(k)}
+    \item \textbf{Search}: \texttt{if(m.find(k) != m.end())}
+    \item \textbf{Iter}: \texttt{for(auto\& p : m) p.first;}
+\end{itemize}
+
+\textbf{\texttt{std::vector<T>}} -- \textit{Dynamic Array}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Fast random access \texttt{v[idx]}, contiguous.
+    \item \textbf{Actions}: \texttt{v.push\_back(val)}, \texttt{v.erase(it)}
+\end{itemize}
+
+\textbf{\texttt{std::list<T>}} -- \textit{Doubly Linked List}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Fast insert/erase anywhere, NO \texttt{v[idx]}.
+    \item \textbf{Actions}: \texttt{l.push\_back(val)}, \texttt{l.remove(val)}
+\end{itemize}
+
+\section*{Pointer Types \& Memory}
+\textbf{1. \texttt{unique\_ptr<T>}} (Exclusive)
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Auto-frees memory on scope exit. No leaks.
+    \item \textbf{Syntax}: \texttt{auto p = std::make\_unique<T>();}
+    \item \textbf{Pass}: Cannot copy. Transfer via \texttt{std::move(p)}.
+\end{itemize}
+
+\textbf{2. \texttt{shared\_ptr<T>}} (Shared)
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Ref-counted. Auto-frees when last owner dies.
+    \item \textbf{Syntax}: \texttt{auto p = std::make\_shared<T>();}
+\end{itemize}
+
+\textbf{3. Raw Pointers \texttt{T*}} (Non-owning)
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Use}: Observe existing objects. Avoid memory leaks!
+    \item \textbf{Pass}: \texttt{uptr.get()} passes raw without moving.
+\end{itemize}
+
+\section*{OOP Concepts}
+\begin{itemize}
+    \setlength\itemsep{-0.3em}
+    \item \textbf{Construct}: Base constructs first, then Derived.
+    \item \textbf{Destruct}: Derived destructs first, then Base.
+    \item \textbf{Polymorphism}: Base ptr runs Derived virtual method.
+\end{itemize}
+
+
+\section*{Product.cpp}
+\begin{lstlisting}
+#include "Product.h"
+#include "NoDiscount.h"
+using namespace std;
+Product::Product(std::string name, float basePrice)
+	: name{name}, basePrice{basePrice}, discount{NoDiscount::instance} {
+}
+string Product::getName() const {
+	return name;
+}
+Product& Product::setBasePrice(float basePrice) {
+	this->basePrice = basePrice;
+	return *this;
+}
+Product& Product::setDiscount(std::shared_ptr<Discount> discount) {
+	this->discount = discount;
+	return *this;
+}
+float Product::priceFor(float quantity) const {
+	float totalPrice = basePrice * quantity;
+	float discountValue = discount->discountFor(quantity);
+	return totalPrice * (1 - discountValue);
+}
+\end{lstlisting}
+
+\section*{Item.cpp}
+\begin{lstlisting}
+#include "Item.h"
+Item::Item(std::string name, float quantity)
+	: name{name}, quantity{quantity} {
+}
+std::string Item::getName() const {
+	return name;
+}
+float Item::getQuantity() const {
+	return quantity;
+}
+\end{lstlisting}
+
+\section*{ShoppingList.cpp}
+\begin{lstlisting}
+#include "ShoppingList.h"
+#include "Item.h"
+using namespace std;
+ShoppingList& ShoppingList::addItem(std::string name, float quantity) {
+	return *this;
+}
+void ShoppingList::items(std::list<Item>::const_iterator& begin,
+		std::list<Item>::const_iterator& end) const {
+}
+\end{lstlisting}
+
+\section*{Discount.cpp}
+\begin{lstlisting}
+#include "Discount.h"
+Discount::~Discount() {
+}
+\end{lstlisting}
+
+\section*{NoDiscount.cpp}
+\begin{lstlisting}
+#include "NoDiscount.h"
+using namespace std;
+shared_ptr<Discount> NoDiscount::instance
+	= shared_ptr<Discount>(new NoDiscount());
+float NoDiscount::discountFor(float quantity) const {
+	return 0;
+}
+\end{lstlisting}
+
+\section*{FixedDiscount.cpp}
+\begin{lstlisting}
+#include "FixedDiscount.h"
+FixedDiscount::FixedDiscount(float discount) : discount{discount} {
+}
+float FixedDiscount::discountFor(float quantity) const {
+	return discount;
+}
+\end{lstlisting}
+
+\section*{QuantityDiscount.cpp}
+\begin{lstlisting}
+#include "QuantityDiscount.h"
+QuantityDiscount& QuantityDiscount::addLimit(float quantity, float discount) {
+	limits[quantity] = discount;
+	return *this;
+}
+float QuantityDiscount::discountFor(float quantity) const {
+	float result = 0;
+	for (auto pair : limits) {
+		if (quantity >= pair.first) {
+			result = pair.second;
+		} else {
+			break;
+		}
+	}
+	return result;
+}
+\end{lstlisting}
+
+\section*{ShopDb.cpp}
+\begin{lstlisting}
+#include "ShopDb.h"
+#include "Shop.h"
+using namespace std;
+ShopDb& ShopDb::addShop(std::unique_ptr<Shop>&& shop) {
+	return *this;
+}
+vector<Shop*> ShopDb::shops() const {
+	return vector<Shop*>();
+}
+Shop* ShopDb::shopByName(std::string name) {
+	return nullptr;
+}
+\end{lstlisting}
+
+\section*{Shop.cpp}
+\begin{lstlisting}
+#include <list>
+#include <stdexcept>
+#include "Shop.h"
+#include "ShoppingList.h"
+#include "Item.h"
+#include "Discount.h"
+using namespace std;
+Shop::Shop(std::string name) : name{name} {
+}
+std::string Shop::getName() const {
+	return name;
+}
+Shop& Shop::addProduct(const Product &product) {
+	return *this;
+}
+Shop& Shop::setBasePrice(std::string productName, float basePrice) {
+	return *this;
+}
+Shop& Shop::setDiscount(std::string productName,
+		std::shared_ptr<Discount> discount) {
+	return *this;
+}
+float Shop::calculatePurchase(const ShoppingList& shoppingList,
+		std::set<const Item*>& notAvailable) const {
+	return 0;
+}
+\end{lstlisting}
+
+\section*{tests.cpp}
+\begin{lstlisting}
+#include <iostream>
+#include <cstdlib>
+#include <memory>
+#include <set>
+#include <cmath>
+#include <stdexcept>
+#include "FixedDiscount.h"
+#include "ShoppingList.h"
+#include "ShopDb.h"
+#include "Shop.h"
+#include "Item.h"
+#include "QuantityDiscount.h"
+using namespace std;
+void assertTrue(bool condition, string failedMessage) {
+    if (!condition) {
+        cout << failedMessage << endl;
+    }
+}
+void shoppingListTests() {
+    ShoppingList list;
+    list.addItem("Milk", 2).addItem("Butter", 250).addItem("Bread", 1.5);
+    std::list<Item>::const_iterator begin, end;
+    list.items(begin, end);
+    assertTrue(begin != end, "List empty");
+    assertTrue(begin->getName() == "Milk" && begin->getQuantity() == 2, "Milk missing");
+}
+void shopDbTests() {
+    ShopDb db;
+    set<string> names = { "Foodie1", "Bakers4less", "Spiceology" };
+    for (const string& n : names) db.addShop(make_unique<Shop>(n));
+    for (Shop* s : db.shops()) {
+        assertTrue(db.shopByName(s->getName()) == s, "Ptr mismatch");
+        names.erase(s->getName());
+    }
+    assertTrue(names.empty(), "Not all shops returned");
+
+    FixedDiscount fd(0.05);
+    assertTrue(abs(fd.discountFor(10) - 0.05) < 0.001, "Fixed");
+
+    QuantityDiscount qd;
+    qd.addLimit(10, 0.05).addLimit(50, 0.1).addLimit(100, 0.15);
+    assertTrue(abs(qd.discountFor(9) - 0) < 0.001, "QD 9");
+    assertTrue(abs(qd.discountFor(10) - 0.05) < 0.001, "QD 10");
+    assertTrue(abs(qd.discountFor(51) - 0.1) < 0.001, "QD 51");
+
+    Shop bakers("Bakers4less");
+    bakers.addProduct(Product("Bread", 5.6));
+    try {
+        bakers.setBasePrice("Milk", 2.0);
+        assertTrue(false, "invalid_argument expected");
+    } catch(invalid_argument&) {}
+}
+void evalTests() {
+    ShopDb db;
+    auto bakers = make_unique<Shop>("Bakers4less");
+    bakers->addProduct(Product("Bread", 5.6));
+    auto foodie = make_unique<Shop>("Foodie1");
+    foodie->addProduct(Product("Milk", 2.1));
+    foodie->addProduct(Product("Bread", 5.8));
+    foodie->addProduct(Product("Butter", 0.00996));
+    db.addShop(move(bakers)).addShop(move(foodie));
+    
+    ShoppingList list;
+    list.addItem("Milk", 2).addItem("Butter", 250).addItem("Bread", 1.5);
+    set<const Item*> unav;
+    float costFoodie = db.shopByName("Foodie1")->calculatePurchase(list, unav);
+    assertTrue(abs(costFoodie - 15.39) < 0.01, "Foodie cost mismatch");
+    assertTrue(unav.empty(), "Foodie missing item");
+    
+    float costBakers = db.shopByName("Bakers4less")->calculatePurchase(list, unav);
+    assertTrue(abs(costBakers - 8.40) < 0.01, "Bakers cost mismatch");
+    assertTrue(unav.size() == 2, "Bakers missing count");
+}
+
+void allTests() {
+    shoppingListTests();
+    shopDbTests();
+    evalTests();
+}
+\end{lstlisting}
+\end{document}

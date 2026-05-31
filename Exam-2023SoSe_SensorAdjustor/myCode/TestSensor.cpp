@@ -6,7 +6,9 @@ TestSensor::TestSensor(const std::string &name,
 	value = 0;
 }
 
-void TestSensor::setRawReading(float value) : value(value) {}
+void TestSensor::setRawReading(float value) {
+	this->value = value;
+}
 
 float TestSensor::rawReading() const
 {

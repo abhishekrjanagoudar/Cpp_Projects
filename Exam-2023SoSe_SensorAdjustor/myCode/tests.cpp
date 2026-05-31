@@ -38,6 +38,14 @@ void adjusterTests() {
      * unchanged.
      */
     // TODO
+    auto nullAdjuster = NullAdjuster::sharedInstance;
+
+    for (float value : testValues){
+    	assertTrue(
+    			nullAdjuster->adjust(value) = value,
+				"NullAdjustor Failed"
+				);
+    }
 
     /*
      * (2) Using the test values given above as samples, assert that a
@@ -45,6 +53,14 @@ void adjusterTests() {
      * the same values as a NullAdjustor.
      */
     // TODO
+    TableBasedAdjuster tableBasedAdjuster;
+    tableBasedAdjuster.breakpoints(0 , 0);
+    for(float values : testValues){
+    	assertTrue(
+    			tableBasedAdjuster.adjust(values) = values,
+				"TableBasedAdjuster single breakpoint Failed"
+				);
+    }
 
     /*
      * (3) Using the test values given above as samples, assert that a
@@ -56,8 +72,15 @@ void adjusterTests() {
      * (rounding errors due to using the binary system).
      * Take this into account when checking the result.
      */
+    TableBasedAdjuster adjuster;
+    adjuster.addBreakpoint(-100 , -110);
+    adjuster.addBreakpoint(0,0);
+    adjuster.addBreakpoint(100 , 90);
     float expected[] = { -11, -1.1, 0, 0.9, 9 };
     // TODO
+
+
+
 
 }
 
@@ -77,6 +100,14 @@ void sensorTests () {
      * readings of a sensor as readings.
      */
     // TODO
+    TestSensor sensor("Test Sensor" , NullAdjuster::sharedInstance);
+    for(float value : testValues){
+    	sensor.setRawReading(value);
+    	assertTrue(
+    			sensor.reading() == value,
+				"NullAdjuster sensor test failed"
+				);
+    }
 
     /*
      * (2) Using a TestSensor and the test values given above as samples,
@@ -86,6 +117,11 @@ void sensorTests () {
      * (50 "assertTrue" invocations in total).
      */
     // TODO
+    for(int i=0 , i<10 , i++){
+    	float factor = i+1;
+    	float offset = i;
+
+    }
 }
 
 /**

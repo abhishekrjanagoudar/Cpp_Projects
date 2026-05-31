@@ -8,11 +8,20 @@
 #include "QuantityDiscount.h"
 
 QuantityDiscount& QuantityDiscount::addLimit(float quantity, float discount) {
-	// TODO (add code)
+	limits[quantity] = discount;
 	return *this;
 }
 
 float QuantityDiscount::discountFor(float quantity) const {
 	// TODO (add code/replace dummy return)
-	return 0;
+	float result = 0;
+	for (auto pair : limits){
+		if(quantity >= pair.first){
+			return pair.second;
+		}
+	else {
+		break;
+	}
+}
+	return result;
 }

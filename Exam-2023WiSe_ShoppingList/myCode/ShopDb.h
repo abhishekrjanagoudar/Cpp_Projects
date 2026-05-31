@@ -22,7 +22,7 @@ private:
 	std::map<std::string, std::unique_ptr<Shop>> knownShops;
 
 public:
-	/**
+/**
 	 * Add a shop to the database. (2 points)
 	 *
 	 * @param shop the shop to add

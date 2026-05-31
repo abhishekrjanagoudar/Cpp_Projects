@@ -11,11 +11,13 @@
 using namespace std;
 
 ShoppingList& ShoppingList::addItem(std::string name, float quantity) {
-	// TODO (add code)
+	neededItems.push_back(Item(name , quantity));
 	return *this;
 }
 
 void ShoppingList::items(std::list<Item>::const_iterator& begin,
 		std::list<Item>::const_iterator& end) const {
 	// TODO (add code)
+	begin = neededItems.begin();
+	end = neededItems.end();
 }
