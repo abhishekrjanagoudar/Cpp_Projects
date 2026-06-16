@@ -25,16 +25,6 @@
  * Derived classes must implement the method "rawReading", which returns
  * the current (raw) sensor reading.
  */
-
-//reading()
-
-//rawReading()
-
-//adjuster->adjust()
-
-//final adjusted value
-
-
 class Sensor {
 private:
     std::string name;

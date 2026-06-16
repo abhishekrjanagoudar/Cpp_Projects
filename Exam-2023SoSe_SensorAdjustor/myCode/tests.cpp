@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <memory>
+#include <cmath>
 
 using namespace std;
 
@@ -21,7 +22,6 @@ void assertTrue(bool condition, string failedMessage) {
         cout << failedMessage << endl;
     }
 }
-
 /**
  * Tests for the adjustor classes. (12 points)
  */
@@ -37,14 +37,13 @@ void adjusterTests() {
      * NullAdjustor's adjust method returns the argument's value
      * unchanged.
      */
-    // TODO
-    auto nullAdjuster = NullAdjuster::sharedInstance;
+    NullAdjuster adj;
 
-    for (float value : testValues){
+    // Verify that NullAdjuster returns every input identically
+    for(float value : testValues){
     	assertTrue(
-    			nullAdjuster->adjust(value) = value,
-				"NullAdjustor Failed"
-				);
+    			adj.adjust(value) == value,
+				"Null Adjustor Failed");
     }
 
     /*
@@ -52,14 +51,14 @@ void adjusterTests() {
      * TableBasedAdjustor with a single breakpoint (0,0) returns
      * the same values as a NullAdjustor.
      */
-    // TODO
-    TableBasedAdjuster tableBasedAdjuster;
-    tableBasedAdjuster.breakpoints(0 , 0);
-    for(float values : testValues){
+    TableBasedAdjuster tabAdj;
+    tabAdj.addBreakpoint(0,0);
+
+    // Verify a TableBasedAdjuster with a single origin breakpoint acts like a NullAdjuster
+    for(float value : testValues){
     	assertTrue(
-    			tableBasedAdjuster.adjust(values) = values,
-				"TableBasedAdjuster single breakpoint Failed"
-				);
+    			tabAdj.adjust(value) == value,
+				"Table Based Adjuster Failed");
     }
 
     /*
@@ -72,16 +71,20 @@ void adjusterTests() {
      * (rounding errors due to using the binary system).
      * Take this into account when checking the result.
      */
-    TableBasedAdjuster adjuster;
-    adjuster.addBreakpoint(-100 , -110);
-    adjuster.addBreakpoint(0,0);
-    adjuster.addBreakpoint(100 , 90);
     float expected[] = { -11, -1.1, 0, 0.9, 9 };
-    // TODO
 
+    // Set up a TableBasedAdjuster for linear interpolation across three points
+    TableBasedAdjuster tabAdj1;
+    tabAdj1.addBreakpoint(-100,-110);
+    tabAdj1.addBreakpoint(0,0);
+    tabAdj1.addBreakpoint(100,90);
 
-
-
+    // Validate calculations allowing for small floating point inaccuracies
+    for(int i = 0 ; i < 5 ; i++){
+    	assertTrue(
+    			fabs(tabAdj1.adjust(testValues[i]) - expected[i]) < 0.0001,
+				"Table Based Adjuster Interpolation Failed");
+    }
 }
 
 /**
@@ -99,14 +102,16 @@ void sensorTests () {
      * assert that a (test) sensor with a NullAdjustor returns the raw
      * readings of a sensor as readings.
      */
-    // TODO
+
     TestSensor sensor("Test Sensor" , NullAdjuster::sharedInstance);
+    
+    // Verify a sensor with a NullAdjuster yields readings exactly equal to its raw input
     for(float value : testValues){
     	sensor.setRawReading(value);
+        
     	assertTrue(
     			sensor.reading() == value,
-				"NullAdjuster sensor test failed"
-				);
+				"Test Sensor NullAdjuster Failed ");
     }
 
     /*
@@ -116,11 +121,20 @@ void sensorTests () {
      * LinearAdjustors for each test value for exhaustive testing
      * (50 "assertTrue" invocations in total).
      */
-    // TODO
-    for(int i=0 , i<10 , i++){
-    	float factor = i+1;
-    	float offset = i;
+    // Verify combinations of LinearAdjuster settings against varying inputs
+    for(int factor = 1 ; factor <= 10; factor++){
+    	auto adjuster = std::make_shared<LinearAdjuster>(
+    			factor, factor - 1);
+        TestSensor sensor("Test Sensor" , adjuster);
 
+    	for(float value : testValues){
+    		sensor.setRawReading(value);
+    		// Calculate mathematical expectation for the linear formula
+    		float expected = value * factor + (factor - 1);
+    		assertTrue(
+    				sensor.reading() == expected,
+					"LinearAdjuster sensor test failed");
+    	}
     }
 }
 
@@ -133,16 +147,42 @@ void networkTests() {
      * "Thermometer n" (with n being the number of the thermometer)
      * that have their readings set to values 20 + n * 0.05.
      */
-    // TODO
+	SensorNetwork network;
+	// Populate the network with sequentially named and valued sensors
+	for(int i = 0; i < 10; i++){
+
+	    auto sensor = std::make_unique<TestSensor>
+	    ("Thermometer " + std::to_string(i),
+	    		NullAdjuster::sharedInstance);
+	    sensor->setRawReading(20 + i * 0.05);
+	    network.add(std::move(sensor));
+	}
 
     /*
      * (1) Assert that adding a sensor with a name that is already
      * used by a sensor in the network throws a DuplicateSensorName
      * exception with the sensor's name as "what".
      */
-    // TODO
-}
+	try
+	{
+	    auto duplicate = std::make_unique<TestSensor>
+	            ("Thermometer 5",
+	            NullAdjuster::sharedInstance);
 
+		// Attempting to add an identically named sensor must throw DuplicateSensorName
+	    network.add(std::move(duplicate));
+	    assertTrue(
+	        false,
+	        "DuplicateSensorName not thrown");
+	}
+	catch(const DuplicateSensorName& e)
+	{
+		// Verify the exception payload carries the offending sensor name
+	    assertTrue(
+	        std::string(e.what()) == "Thermometer 5",
+	        "Wrong exception message");
+	}
+}
 void allTests() {
     adjusterTests();
     sensorTests();

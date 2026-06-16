@@ -10,7 +10,6 @@ using namespace std;
 // Main program
 int main (void)
 {
-    // TODO: Add your program code here
     cout << "Student Name: ............, Matrikel-Nb: ......." << endl << endl;
     
     extern void allTests();

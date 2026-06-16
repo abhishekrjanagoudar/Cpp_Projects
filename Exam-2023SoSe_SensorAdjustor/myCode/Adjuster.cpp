@@ -2,4 +2,3 @@
 
 Adjuster::~Adjuster() {
 }
-

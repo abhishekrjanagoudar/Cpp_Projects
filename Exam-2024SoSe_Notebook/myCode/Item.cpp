@@ -6,24 +6,15 @@ using namespace std;
 
 long Item::idCounter = 0;
 
-// TODO
-Item::Item(string title) : title{""} {
-	// TODO
-}
+Item::Item(string title) : id(++idCounter), title{title} {}
 
-Item::~Item() {
-}
+Item::~Item() {}
 
-long Item::getId() const {
-	// TODO (replace dummy)
-	return 0;
-}
+long Item::getId() const { return id; }
 
-std::string Item::getTitle() const {
-	// TODO (replace dummy)
-	return "";
-}
+std::string Item::getTitle() const { return title; }
 
 void Item::printItem(std::ostream &out, int indent) const {
-	// TODO
+  // Output item title with correct indentation level and bullet format
+  out << string(indent, ' ') << "- " << title << endl;
 }

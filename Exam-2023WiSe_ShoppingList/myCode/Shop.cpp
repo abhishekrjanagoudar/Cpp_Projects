@@ -23,62 +23,61 @@ std::string Shop::getName() const {
 }
 
 Shop& Shop::addProduct(const Product &product) {
-	// TODO (add code)
-	products.insert({product.getName(), product});
-
+	// Add the product to the catalog, keyed by its name
+	products.insert({product.getName() , product});
 	return *this;
 }
 
 Shop& Shop::setBasePrice(std::string productName, float basePrice) {
-	// TODO (add code)
-	auto it = products.find(productName);
-	    if (it == products.end()) {
-	        throw std::invalid_argument("Error");
-	    }
-	    it->second.setBasePrice(basePrice);
+	// Look up the product by name
+	auto pair = products.find(productName);
+	if (pair == products.end()) {
+		// Throw an error if the product doesn't exist in the shop
+	   	throw std::invalid_argument("Product Not Found");
+	}
+	// Update the base price of the found product
+	pair->second.setBasePrice(basePrice);
 	return *this;
 }
 
 Shop& Shop::setDiscount(std::string productName,
 		std::shared_ptr<Discount> discount) {
-	// TODO (add code)
-	auto it = products.find(productName);
-	if(it == products.end()){
-		throw std::invalid_argument("Error");
+	// Look up the product by name
+	auto pair = products.find(productName);
+	if(pair == products.end()){
+		// Throw an error if the product doesn't exist in the shop
+		throw std::invalid_argument("Product Not Found");
 	}
-	it->second.setDiscount(discount);
+	// Update the discount strategy for the found product
+	pair->second.setDiscount(discount);
 	return *this;
 }
 
-float Shop::calculatePurchase(
-        const ShoppingList& shoppingList,
-        std::set<const Item*>& notAvailable) const {
+float Shop::calculatePurchase(const ShoppingList& shoppingList,
+		std::set<const Item*>& notAvailable) const {
+	// Ensure the unavailable items set is empty before evaluation
+	notAvailable.clear();
+	float totalPrice = 0;
 
-    float totalPrice = 0;
+	std::list<Item>::const_iterator begin;
+	std::list<Item>::const_iterator end;
 
-    list<Item>::const_iterator begin;
-    list<Item>::const_iterator end;
+	// Retrieve boundaries of the shopping list items
+	shoppingList.items(begin , end);
 
-    shoppingList.items(begin, end);
-
-    for (auto it = begin; it != end; ++it) {
-
-        auto productIt =
-                products.find(it->getName());
-
-        if (productIt != products.end()) {
-
-            totalPrice +=
-                    productIt->second.priceFor(
-                            it->getQuantity());
-
-        } else {
-
-            notAvailable.insert(&(*it));
-
-        }
-    }
-
-    return totalPrice;
+	// Iterate over each item requested in the shopping list
+	for(auto it = begin ; it !=end ; it++){
+		// Check if the shop carries the requested item
+		auto productIt = products.find(it->getName());
+		if(productIt != products.end()){
+			// Accumulate the cost applying any relevant discounts
+			totalPrice = totalPrice + productIt->second.priceFor(it->getQuantity());
+		}
+		else{
+			// Record the address of the item since it's not sold here
+			notAvailable.insert(&(*it));
+		}
+	}
+	return totalPrice;
 }
 

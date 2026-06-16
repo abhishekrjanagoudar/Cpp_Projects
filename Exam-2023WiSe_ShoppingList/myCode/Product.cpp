@@ -1,4 +1,4 @@
-	/*
+/*
  * Product.cpp
  *
  *  Created on: 10.02.2024
@@ -29,10 +29,12 @@ Product& Product::setDiscount(std::shared_ptr<Discount> discount) {
 }
 
 float Product::priceFor(float quantity) const {
-	// TODO (replace "dummy return")
-	float totalPrice = basePrice * quantity;
-	float discountValue = discount->discountFor(quantity);
+	// Compute the base price for the requested quantity
+	float priceItem = quantity * basePrice;
+	// Determine the applicable discount factor
+	float discountItem = discount->discountFor(quantity);
 
-	return totalPrice * (1 - discountValue);
+	// Apply the discount factor to the base price
+	return priceItem * (1 - discountItem);
 }
 

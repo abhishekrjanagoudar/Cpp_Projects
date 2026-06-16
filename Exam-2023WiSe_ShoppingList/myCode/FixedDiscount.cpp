@@ -11,5 +11,6 @@ FixedDiscount::FixedDiscount(float discount) : discount{discount} {
 }
 
 float FixedDiscount::discountFor(float quantity) const {
+	// Apply the same discount regardless of the purchased quantity
 	return discount;
 }

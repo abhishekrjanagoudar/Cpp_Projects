@@ -1,5 +1,5 @@
-% SensorAdjustor_All.tex - Combined source listing
-\documentclass[9pt,twocolumn]{article}
+% ShoppingList_All.tex - Combined source listing
+\documentclass[8pt,twocolumn]{extarticle}
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper,top=0.2in,bottom=0.2in,left=0.3in,right=0.3in]{geometry}
 \usepackage{xcolor}
@@ -7,7 +7,8 @@
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{titlesec}
-\titlespacing*{\section}{0pt}{1pt}{1pt}
+\titleformat*{\section}{\normalsize\bfseries}
+\titlespacing*{\section}{0pt}{2pt}{-2pt}
 
 % Color scheme
 \definecolor{kwcolor}{RGB}{0,0,180}
@@ -16,9 +17,11 @@
 \definecolor{bg}{RGB}{248,248,248}
 
 \lstset{
+  aboveskip=0pt,
+  belowskip=0pt,
   backgroundcolor=\color{bg},
   language=C++,
-  basicstyle=\scriptsize\ttfamily,
+  basicstyle=\tiny\ttfamily,
   lineskip=-1.5pt,
   keywordstyle=\color{kwcolor}\bfseries,
   commentstyle=\color{commentcolor}\itshape,
@@ -34,400 +37,190 @@
   captionpos=b
 }
 
+
 \begin{document}
-
-\section*{C++ Symbols \& Syntax}
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{\texttt{::}} Access class statics (\texttt{Bank::AccountType}).
-    \item \textbf{\texttt{->}} Access object member via ptr (\texttt{p->m()}).
-    \item \textbf{\texttt{*}} Declares ptr OR gets value at address.
-    \item \textbf{\texttt{\&}} Declares reference OR gets address.
-    \item \textbf{\texttt{this}} Pointer to current object instance.
-    \item \textbf{\texttt{const}} Immutable; cannot modify the object.
-    \item \textbf{\texttt{virtual}} Method can be overridden by child class.
-    \item \textbf{\texttt{override}} Safely overrides a virtual method.
-    \item \textbf{\texttt{= 0}} Pure virtual method; class is abstract.
-\end{itemize}
-
-\section*{STL Containers}
-\textbf{\texttt{std::map<K,V>}} -- \textit{Sorted Key-Value Pairs}
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Use}: Unique keys, fast key-based search.
-    \item \textbf{Actions}: \texttt{m[k]=v}, \texttt{m.erase(k)}
-    \item \textbf{Search}: \texttt{if(m.find(k) != m.end())}
-    \item \textbf{Iter}: \texttt{for(auto\& p : m) p.first;}
-\end{itemize}
-
-\textbf{\texttt{std::vector<T>}} -- \textit{Dynamic Array}
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Use}: Fast random access \texttt{v[idx]}, contiguous.
-    \item \textbf{Actions}: \texttt{v.push\_back(val)}, \texttt{v.erase(it)}
-\end{itemize}
-
-\textbf{\texttt{std::list<T>}} -- \textit{Doubly Linked List}
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Use}: Fast insert/erase anywhere, NO \texttt{v[idx]}.
-    \item \textbf{Actions}: \texttt{l.push\_back(val)}, \texttt{l.remove(val)}
-\end{itemize}
-
-\section*{Pointer Types \& Memory}
-\textbf{1. \texttt{unique\_ptr<T>}} (Exclusive)
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Use}: Auto-frees memory on scope exit. No leaks.
-    \item \textbf{Syntax}: \texttt{auto p = std::make\_unique<T>();}
-    \item \textbf{Pass}: Cannot copy. Transfer via \texttt{std::move(p)}.
-\end{itemize}
-
-\textbf{2. \texttt{shared\_ptr<T>}} (Shared)
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Use}: Ref-counted. Auto-frees when last owner dies.
-    \item \textbf{Syntax}: \texttt{auto p = std::make\_shared<T>();}
-\end{itemize}
-
-\textbf{3. Raw Pointers \texttt{T*}} (Non-owning)
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Use}: Observe existing objects. Avoid memory leaks!
-    \item \textbf{Pass}: \texttt{uptr.get()} passes raw without moving.
-\end{itemize}
-
-\section*{OOP Concepts}
-\begin{itemize}
-    \setlength\itemsep{-0.3em}
-    \item \textbf{Construct}: Base constructs first, then Derived.
-    \item \textbf{Destruct}: Derived destructs first, then Base.
-    \item \textbf{Polymorphism}: Base ptr runs Derived virtual method.
-\end{itemize}
-
-\section*{Adjuster.cpp}
-\begin{lstlisting}
-#include "Adjuster.h"
-
-Adjuster::~Adjuster() {
-}
-
-
-\end{lstlisting}
 
 \section*{LinearAdjuster.cpp}
 \begin{lstlisting}
-#include "LinearAdjuster.h"
-
-LinearAdjuster::LinearAdjuster(float factor, float offset) : factor(factor) , offset(offset)
+LinearAdjuster::LinearAdjuster(float factor, float offset)
 {
+	this->factor = factor;
+	this->offset = offset;
 }
-
 float LinearAdjuster::adjust(float value) const
 {
-	return (value*factor) + offset;
+	return (value * factor) + offset;
 }
-
-\end{lstlisting}
-
-\section*{NullAdjuster.cpp}
-\begin{lstlisting}
-#include "NullAdjuster.h"
-
-std::shared_ptr<Adjuster> NullAdjuster::sharedInstance
-    = std::make_shared<NullAdjuster>();
-
-float NullAdjuster::adjust(float value) const {
-    return value;
-}
-
 \end{lstlisting}
 
 \section*{TableBasedAdjuster.cpp}
 \begin{lstlisting}
-#include "TableBasedAdjuster.h"
-
 TableBasedAdjuster& TableBasedAdjuster::addBreakpoint(float x, float y)
 {
 	breakpoints[x] = y;
 	return *this;
 }
-
 float TableBasedAdjuster::adjust(float value) const
 {
-    // Empty map
-    if (breakpoints.empty())
-    {
-        return value;
-    }
-
-    // Smallest breakpoint
-    auto k_min = breakpoints.begin();
-
-    // Largest breakpoint
-    auto k_max = std::prev(breakpoints.end());
-
-    // value <= k_min
-    if (value <= k_min->first)
-    {
-        float v_min = k_min->second;
-
-        return v_min - (k_min->first - value);
-    }
-
-    // value >= k_max
-    if (value >= k_max->first)
-    {
-        float v_max = k_max->second;
-
-        return v_max + (value - k_max->first);
-    }
-
-    // Adjacent breakpoints
-    auto k_n = breakpoints.begin();
-    auto k_n1 = std::next(k_n);
-
-    while (k_n1 != breakpoints.end())
-    {
-        float v_n = k_n->second;
-        float v_n1 = k_n1->second;
-
-        // k_n < value <= k_(n+1)
-        if (k_n->first < value && value <= k_n1->first)
-        {
-            return (value - k_n->first)
-                    / (k_n1->first - k_n->first)
-                    * (v_n1 - v_n)
-                    + v_n;
-        }
-
-        ++k_n;
-        ++k_n1;
-    }
-
-    return value;
+	if(breakpoints.empty()){
+		return value;
+	}
+	auto k_min = breakpoints.begin();
+	auto k_max = --breakpoints.end();
+	if(value <= k_min->first){
+		float v_min = k_min->second;
+		return v_min - (k_min->first - value);
+	}
+	if(value >= k_max->first){
+		float v_max = k_max->second;
+		return v_max + (value - k_max->first);
+	}
+	auto k_n = breakpoints.begin();
+	auto k_n1 = std::next(k_n);
+	while(k_n1 != breakpoints.end()){
+		if(k_n->first < value && value <= k_n1->first){
+			float v_n = k_n->second;
+			float v_n1 = k_n1->second;
+			return (value - k_n->first) / (k_n1->first - k_n->first) * (v_n1 - v_n) + v_n;
+		}
+		k_n++;
+		k_n1++;
+	}
+	return value;
 }
-
 \end{lstlisting}
 
 \section*{Sensor.cpp}
 \begin{lstlisting}
-#include "Sensor.h"
-#include "Adjuster.h"
-
 Sensor::~Sensor() {
 }
-
 std::string Sensor::getName() const {
-    return name;
+	return name;
 }
-
-Sensor::Sensor(const std::string &name, std::shared_ptr<Adjuster> adjuster) : name(name) , adjuster(adjuster)
+Sensor::Sensor(const std::string &name, std::shared_ptr<Adjuster> adjuster)
 {
+	this->name = name;
+	this->adjuster = adjuster;
 }
-
 float Sensor::reading() const {
-    return adjuster->adjust(rawReading());
+	return adjuster->adjust(rawReading());
 }
-
 \end{lstlisting}
 
 \section*{TestSensor.cpp}
 \begin{lstlisting}
-#include "TestSensor.h"
-
 TestSensor::TestSensor(const std::string &name,
-		std::shared_ptr<Adjuster> adjustor) : Sensor(name, adjustor)
+		std::shared_ptr<Adjuster> adjustor) : Sensor(name, adjustor) , value(0) {}
+void TestSensor::setRawReading(float value)
 {
-	value = 0;
-}
-
-void TestSensor::setRawReading(float value) {
 	this->value = value;
 }
-
 float TestSensor::rawReading() const
 {
 	return value;
 }
-
 \end{lstlisting}
 
 \section*{DuplicateSensorName.cpp}
 \begin{lstlisting}
-#include "DuplicateSensorName.h"
-
-DuplicateSensorName::DuplicateSensorName(std::string sensorName) : std::invalid_argument(sensorName)
-{
-}
-
+DuplicateSensorName::DuplicateSensorName(std::string sensorName) : std::invalid_argument(sensorName){}
 \end{lstlisting}
 
 \section*{SensorNetwork.cpp}
 \begin{lstlisting}
-#include "SensorNetwork.h"
-#include "DuplicateSensorName.h"
-
-SensorNetwork& SensorNetwork::add(std::unique_ptr<Sensor>&& sensor)
+SensorNetwork& SensorNetwork::add(std::unique_ptr<Sensor> &&sensor)
 {
-    // Check duplicates
-    for (const auto& existingSensor : sensors)
-    {
-        if (existingSensor->getName() == sensor->getName())
-        {
-            throw DuplicateSensorName(sensor->getName());
-        }
-    }
-
-    // Move sensor into list
-    sensors.push_back(std::move(sensor));
-
-    return *this;
+	for(const auto& existing : sensors){
+		if(existing->getName() == sensor->getName()){
+			throw DuplicateSensorName(sensor->getName());
+		}
+	}
+	sensors.push_back(std::move(sensor));
+	return *this;
 }
-
 \end{lstlisting}
 
-\section*{tests.cpp}
+\section*{Tests.cpp}
 \begin{lstlisting}
-#include <iostream>
-#include <cstdlib>
-#include <memory>
-
-using namespace std;
-
-#include "TestSensor.h"
-#include "LinearAdjuster.h"
-#include "TableBasedAdjuster.h"
-#include "SensorNetwork.h"
-#include "DuplicateSensorName.h"
-
-/**
- * Outputs the failedMessage on the console if condition is false.
- *
- * @param condition the condition
- * @param failedMessage the message
- */
 void assertTrue(bool condition, string failedMessage) {
-    if (!condition) {
-        cout << failedMessage << endl;
-    }
+	if (!condition) {
+		cout << failedMessage << endl;
+	}
 }
-
-/**
- * Tests for the adjustor classes. (12 points)
- */
 void adjusterTests() {
-
-    /*
-     * Values for subsequent tests.
-     */
-    float testValues[] = { -10, -1, 0, 1, 10 };
-
-    /*
-     * (1) Using the test values given above as samples, assert that a
-     * NullAdjustor's adjust method returns the argument's value
-     * unchanged.
-     */
-    // TODO
-
-    /*
-     * (2) Using the test values given above as samples, assert that a
-     * TableBasedAdjustor with a single breakpoint (0,0) returns
-     * the same values as a NullAdjustor.
-     */
-    // TODO
-
-    /*
-     * (3) Using the test values given above as samples, assert that a
-     * TableBasedAdjustor with breakpoints (-100,-110), (0,0)
-     * and (100,90) returns the given expected values.
-     *
-     * Remember (from your basic C/C++ courses) that floating
-     * point calculations do not always yield exact results
-     * (rounding errors due to using the binary system).
-     * Take this into account when checking the result.
-     */
-    float expected[] = { -11, -1.1, 0, 0.9, 9 };
-    // TODO
-
+	float testValues[] = { -10, -1, 0, 1, 10 };
+	NullAdjuster adj;
+	for(float value : testValues){
+		assertTrue(adj.adjust(value) == value,
+			"Null Adjustor Failed");
+	}
+	TableBasedAdjuster tabAdj;
+	tabAdj.addBreakpoint(0,0);
+	for(float value : testValues){
+		assertTrue(tabAdj.adjust(value) == value,
+			"Table Based Adjuster Failed");
+	}
+	float expected[] = { -11, -1.1, 0, 0.9, 9 };
+	TableBasedAdjuster tabAdj1;
+	tabAdj1.addBreakpoint(-100,-110);
+	tabAdj1.addBreakpoint(0,0);
+	tabAdj1.addBreakpoint(100,90);
+	for(int i = 0 ; i < 5 ; i++){
+		assertTrue(fabs(tabAdj1.adjust(testValues[i]) - expected[i]) < 0.0001,
+			"Table Based Adjuster Interpolation Failed");
+	}
 }
-
-/**
- * Tests for the sensor classes. (12 points)
- */
 void sensorTests () {
-
-    /*
-     * Values for subsequent tests.
-     */
-    float testValues[] = { -10, -1, 0, 1, 10 };
-
-    /*
-     * (1) Using a TestSensor and the test values given above as samples,
-     * assert that a (test) sensor with a NullAdjustor returns the raw
-     * readings of a sensor as readings.
-     */
-    // TODO
-
-    /*
-     * (2) Using a TestSensor and the test values given above as samples,
-     * assert that a (test) sensor with a LinearAdjustor returns the
-     * expected readings. Test with 10 differently configured
-     * LinearAdjustors for each test value for exhaustive testing
-     * (50 "assertTrue" invocations in total).
-     */
-    // TODO
+	float testValues[] = { -10, -1, 0, 1, 10 };
+	TestSensor sensor("Test Sensor" , NullAdjuster::sharedInstance);
+	for(float value : testValues){
+		sensor.setRawReading(value);
+		assertTrue(sensor.reading() == value,
+			"Test Sensor NullAdjuster Failed ");
+	}
+	for(int factor = 1 ; factor <= 10; factor++){
+		auto adjuster = std::make_shared<LinearAdjuster>(
+			factor, factor - 1);
+		TestSensor sensor("Test Sensor" , adjuster);
+		for(float value : testValues){
+			sensor.setRawReading(value);
+			float expected = value * factor + (factor - 1);
+			assertTrue(sensor.reading() == expected,
+				"LinearAdjuster sensor test failed");
+		}
+	}
 }
-
-/**
- * Tests for the sensor network. (16 points)
- */
 void networkTests() {
-    /*
-     * Create a sensor network with 10 TestSensors named
-     * "Thermometer n" (with n being the number of the thermometer)
-     * that have their readings set to values 20 + n * 0.05.
-     */
-    // TODO
-
-    /*
-     * (1) Assert that adding a sensor with a name that is already
-     * used by a sensor in the network throws a DuplicateSensorName
-     * exception with the sensor's name as "what".
-     */
-    // TODO
+	SensorNetwork network;
+	for(int i = 0; i < 10; i++)
+	{
+		auto sensor =
+			std::make_unique<TestSensor>(
+				"Thermometer " + std::to_string(i),
+				NullAdjuster::sharedInstance);
+		sensor->setRawReading(20 + i * 0.05);
+		network.add(std::move(sensor));
+	}
+	try
+	{
+		auto duplicate =
+			std::make_unique<TestSensor>(
+				"Thermometer 5",
+				NullAdjuster::sharedInstance);
+		network.add(std::move(duplicate));
+		assertTrue(false, "DuplicateSensorName not thrown");
+	}
+	catch(const DuplicateSensorName& e)
+	{
+		assertTrue(std::string(e.what()) == "Thermometer 5",
+			"Wrong exception message");
+	}
 }
-
 void allTests() {
-    adjusterTests();
-    sensorTests();
-    networkTests();
+	adjusterTests();
+	sensorTests();
+	networkTests();
 }
-
-\end{lstlisting}
-
-\section*{main.cpp}
-\begin{lstlisting}
-// Standard (system) header files
-#include <iostream>
-#include <stdlib.h>
-#include <fstream>
-// Add more standard header files as required
-// #include <string>
-
-using namespace std;
-
-// Main program
-int main (void)
-{
-    // TODO: Add your program code here
-    cout << "Student Name: ............, Matrikel-Nb: ......." << endl << endl;
-    
-    extern void allTests();
-    allTests();
-    return 0;
-}
-
 \end{lstlisting}
 
 \end{document}
