@@ -1,0 +1,226 @@
+% ShoppingList_All.tex - Combined source listing
+\documentclass[8pt,twocolumn]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=0.2in,bottom=0.2in,left=0.3in,right=0.3in]{geometry}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\titleformat*{\section}{\normalsize\bfseries}
+\titlespacing*{\section}{0pt}{2pt}{-2pt}
+
+% Color scheme
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{commentcolor}{RGB}{0,120,0}
+\definecolor{stringcolor}{RGB}{180,0,0}
+\definecolor{bg}{RGB}{248,248,248}
+
+\lstset{
+  aboveskip=0pt,
+  belowskip=0pt,
+  backgroundcolor=\color{bg},
+  language=C++,
+  basicstyle=\tiny\ttfamily,
+  lineskip=-1.5pt,
+  keywordstyle=\color{kwcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  stepnumber=1,
+  numbersep=8pt,
+  tabsize=4,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  captionpos=b
+}
+
+
+\begin{document}
+
+\section*{LinearAdjuster.cpp}
+\begin{lstlisting}
+LinearAdjuster::LinearAdjuster(float factor, float offset)
+{
+	this->factor = factor;
+	this->offset = offset;
+}
+float LinearAdjuster::adjust(float value) const
+{
+	return (value * factor) + offset;
+}
+\end{lstlisting}
+
+\section*{TableBasedAdjuster.cpp}
+\begin{lstlisting}
+TableBasedAdjuster& TableBasedAdjuster::addBreakpoint(float x, float y)
+{
+	breakpoints[x] = y;
+	return *this;
+}
+float TableBasedAdjuster::adjust(float value) const
+{
+	if(breakpoints.empty()){
+		return value;
+	}
+	auto k_min = breakpoints.begin();
+	auto k_max = --breakpoints.end();
+	if(value <= k_min->first){
+		float v_min = k_min->second;
+		return v_min - (k_min->first - value);
+	}
+	if(value >= k_max->first){
+		float v_max = k_max->second;
+		return v_max + (value - k_max->first);
+	}
+	auto k_n = breakpoints.begin();
+	auto k_n1 = std::next(k_n);
+	while(k_n1 != breakpoints.end()){
+		if(k_n->first < value && value <= k_n1->first){
+			float v_n = k_n->second;
+			float v_n1 = k_n1->second;
+			return (value - k_n->first) / (k_n1->first - k_n->first) * (v_n1 - v_n) + v_n;
+		}
+		k_n++;
+		k_n1++;
+	}
+	return value;
+}
+\end{lstlisting}
+
+\section*{Sensor.cpp}
+\begin{lstlisting}
+Sensor::~Sensor() {
+}
+std::string Sensor::getName() const {
+	return name;
+}
+Sensor::Sensor(const std::string &name, std::shared_ptr<Adjuster> adjuster)
+{
+	this->name = name;
+	this->adjuster = adjuster;
+}
+float Sensor::reading() const {
+	return adjuster->adjust(rawReading());
+}
+\end{lstlisting}
+
+\section*{TestSensor.cpp}
+\begin{lstlisting}
+TestSensor::TestSensor(const std::string &name,
+		std::shared_ptr<Adjuster> adjustor) : Sensor(name, adjustor) , value(0) {}
+void TestSensor::setRawReading(float value)
+{
+	this->value = value;
+}
+float TestSensor::rawReading() const
+{
+	return value;
+}
+\end{lstlisting}
+
+\section*{DuplicateSensorName.cpp}
+\begin{lstlisting}
+DuplicateSensorName::DuplicateSensorName(std::string sensorName) : std::invalid_argument(sensorName){}
+\end{lstlisting}
+
+\section*{SensorNetwork.cpp}
+\begin{lstlisting}
+SensorNetwork& SensorNetwork::add(std::unique_ptr<Sensor> &&sensor)
+{
+	for(const auto& existing : sensors){
+		if(existing->getName() == sensor->getName()){
+			throw DuplicateSensorName(sensor->getName());
+		}
+	}
+	sensors.push_back(std::move(sensor));
+	return *this;
+}
+\end{lstlisting}
+
+\section*{Tests.cpp}
+\begin{lstlisting}
+void assertTrue(bool condition, string failedMessage) {
+	if (!condition) {
+		cout << failedMessage << endl;
+	}
+}
+void adjusterTests() {
+	float testValues[] = { -10, -1, 0, 1, 10 };
+	NullAdjuster adj;
+	for(float value : testValues){
+		assertTrue(adj.adjust(value) == value,
+			"Null Adjustor Failed");
+	}
+	TableBasedAdjuster tabAdj;
+	tabAdj.addBreakpoint(0,0);
+	for(float value : testValues){
+		assertTrue(tabAdj.adjust(value) == value,
+			"Table Based Adjuster Failed");
+	}
+	float expected[] = { -11, -1.1, 0, 0.9, 9 };
+	TableBasedAdjuster tabAdj1;
+	tabAdj1.addBreakpoint(-100,-110);
+	tabAdj1.addBreakpoint(0,0);
+	tabAdj1.addBreakpoint(100,90);
+	for(int i = 0 ; i < 5 ; i++){
+		assertTrue(fabs(tabAdj1.adjust(testValues[i]) - expected[i]) < 0.0001,
+			"Table Based Adjuster Interpolation Failed");
+	}
+}
+void sensorTests () {
+	float testValues[] = { -10, -1, 0, 1, 10 };
+	TestSensor sensor("Test Sensor" , NullAdjuster::sharedInstance);
+	for(float value : testValues){
+		sensor.setRawReading(value);
+		assertTrue(sensor.reading() == value,
+			"Test Sensor NullAdjuster Failed ");
+	}
+	for(int factor = 1 ; factor <= 10; factor++){
+		auto adjuster = std::make_shared<LinearAdjuster>(
+			factor, factor - 1);
+		TestSensor sensor("Test Sensor" , adjuster);
+		for(float value : testValues){
+			sensor.setRawReading(value);
+			float expected = value * factor + (factor - 1);
+			assertTrue(sensor.reading() == expected,
+				"LinearAdjuster sensor test failed");
+		}
+	}
+}
+void networkTests() {
+	SensorNetwork network;
+	for(int i = 0; i < 10; i++)
+	{
+		auto sensor =
+			std::make_unique<TestSensor>(
+				"Thermometer " + std::to_string(i),
+				NullAdjuster::sharedInstance);
+		sensor->setRawReading(20 + i * 0.05);
+		network.add(std::move(sensor));
+	}
+	try
+	{
+		auto duplicate =
+			std::make_unique<TestSensor>(
+				"Thermometer 5",
+				NullAdjuster::sharedInstance);
+		network.add(std::move(duplicate));
+		assertTrue(false, "DuplicateSensorName not thrown");
+	}
+	catch(const DuplicateSensorName& e)
+	{
+		assertTrue(std::string(e.what()) == "Thermometer 5",
+			"Wrong exception message");
+	}
+}
+void allTests() {
+	adjusterTests();
+	sensorTests();
+	networkTests();
+}
+\end{lstlisting}
+
+\end{document}

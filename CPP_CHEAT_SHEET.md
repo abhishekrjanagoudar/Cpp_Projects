@@ -1,508 +1,171 @@
-# C++ Cheat Sheet for Exams
+# C++ Past Exam Cheat Sheet: STL, Pointers, and Streams 🚀🎓
 
-## 1. .h vs .cpp
-
-// Short Definition
-.h file = declarations and class interface. .cpp file = function implementations and program logic.
-
-// Syntax
-```cpp
-// Student.h
-class Student {
-private:
-    int age;
-
-public:
-    Student(int age);
-    int getAge() const;
-};
-
-// Student.cpp
-#include "Student.h"
-
-Student::Student(int age) {
-    this->age = age;
-}
-
-int Student::getAge() const {
-    return age;
-}
-```
-
-// Example
-Use .h to show what the class can do. Use .cpp to write how it works.
-
-// Important Notes
-- .h keeps declarations, .cpp keeps implementation.
-- Put includes in .cpp when possible to keep headers small.
-- Use "#include \"Student.h\"" inside the .cpp file.
-- Most Important Exam Note: declaration first, definition later.
-
-## 2. Class Structure
-
-// Short Definition
-A class groups data and functions together.
-
-// Syntax
-```cpp
-class Car {
-private:
-    int speed;   // hidden data
-
-public:
-    Car(int s);
-    void setSpeed(int s);
-    int getSpeed() const;
-};
-```
-
-// Example
-```cpp
-class Car {
-private:
-    int speed;
-
-public:
-    Car(int s);
-    void setSpeed(int s);
-    int getSpeed() const;
-};
-
-Car::Car(int s) : speed(s) {}
-
-void Car::setSpeed(int s) {
-    speed = s;
-}
-
-int Car::getSpeed() const {
-    return speed;
-}
-```
-
-// Important Notes
-- private = internal data.
-- public = functions other code can call.
-- Use getters/setters when data must stay controlled.
-- Common mistake: writing function bodies inside the header when the task asks for .cpp separation.
-
-## 3. Constructors
-
-// Short Definition
-A constructor runs automatically when an object is created.
-
-// Syntax
-```cpp
-class Student {
-private:
-    int age;
-
-public:
-    Student(int age);   // parameterized constructor
-};
-```
-
-// Example
-```cpp
-Student::Student(int age) {
-    this->age = age;    // this-> means current object
-}
-```
-
-// Important Notes
-- Constructor name must be the same as the class name.
-- No return type, not even void.
-- Use this-> when parameter name is same as member name.
-- Common mistake: forgetting to initialize members.
-
-## 4. Methods
-
-// Short Definition
-Methods are functions inside a class.
-
-// Syntax
-```cpp
-class Student {
-public:
-    int getAge() const;
-};
-
-int Student::getAge() const {
-    return age;
-}
-```
-
-// Example
-```cpp
-class Box {
-private:
-    int value;
-
-public:
-    void setValue(int v);
-    int getValue() const;
-};
-
-void Box::setValue(int v) {
-    value = v;
-}
-
-int Box::getValue() const {
-    return value;
-}
-```
-
-// Important Notes
-- Use ClassName::functionName in .cpp.
-- const after the function means the method does not modify the object.
-- Common mistake: missing ClassName:: in implementation.
-
-## 5. const
-
-// Short Definition
-const means the value should not change.
-
-// Syntax
-```cpp
-const int x = 5;
-int getAge() const;
-void printName(const std::string& name);
-```
-
-// Example
-```cpp
-int Student::getAge() const {
-    return age;
-}
-
-void printName(const std::string& name) {
-    std::cout << name << '\n';
-}
-```
-
-// Important Notes
-- const variable = cannot change after assignment.
-- const method = does not modify object data.
-- const reference avoids copying.
-- Common mistake: forgetting const in getter functions.
-
-## 6. References
-
-// Short Definition
-A reference is another name for an existing variable.
-
-// Syntax
-```cpp
-int x = 10;
-int& ref = x;
-```
-
-// Example
-```cpp
-void setAge(int& age) {
-    age = 20;   // changes original variable
-}
-```
-
-// Important Notes
-- Use & in function parameters to avoid copying.
-- References must be initialized.
-- Common mistake: confusing reference & with address-of operator.
-
-## 7. Pointers
-
-// Short Definition
-A pointer stores the address of a variable.
-
-// Syntax
-```cpp
-int x = 10;
-int* ptr = &x;
-```
-
-// Example
-```cpp
-int x = 10;
-int* ptr = &x;
-
-std::cout << x << '\n';     // value
-std::cout << &x << '\n';    // address of x
-std::cout << ptr << '\n';   // address stored in ptr
-std::cout << *ptr << '\n';  // value at address
-```
-
-// Important Notes
-- &x gives the address of x.
-- *ptr gives the value at the stored address.
-- Use -> for object access through a pointer.
-- Common mistake: using *ptr when ptr is not valid.
-
-## 8. this and this->
-
-// Short Definition
-this is a pointer to the current object.
-
-// Syntax
-```cpp
-this->member = value;
-```
-
-// Example
-```cpp
-class Student {
-private:
-    int age;
-
-public:
-    Student(int age) {
-        this->age = age;   // member = parameter
-    }
-};
-```
-
-// Important Notes
-- Use this-> when parameter names hide member names.
-- Helps make code clear in constructors and setters.
-- Common mistake: writing age = age; without this->.
-
-## 9. Inheritance
-
-// Short Definition
-Inheritance lets one class use features of another class.
-
-// Syntax
-```cpp
-class Parent {
-public:
-    void show();
-};
-
-class Child : public Parent {
-public:
-    void childOnly();
-};
-```
-
-// Example
-```cpp
-class Animal {
-public:
-    void eat() {
-        std::cout << "Eating\n";
-    }
-};
-
-class Dog : public Animal {
-public:
-    void bark() {
-        std::cout << "Bark\n";
-    }
-};
-```
-
-// Important Notes
-- public inheritance means "is-a" relationship.
-- Child class gets parent functions.
-- Common mistake: forgetting public after the colon.
-
-## 10. virtual and override
-
-// Short Definition
-virtual allows runtime polymorphism. override checks that a child function really replaces a parent function.
-
-// Syntax
-```cpp
-class Base {
-public:
-    virtual void print() const;
-    virtual ~Base() = default;
-};
-
-class Derived : public Base {
-public:
-    void print() const override;
-};
-```
-
-// Example
-```cpp
-class Shape {
-public:
-    virtual void draw() const {
-        std::cout << "Shape\n";
-    }
-    virtual ~Shape() = default;
-};
-
-class Circle : public Shape {
-public:
-    void draw() const override {
-        std::cout << "Circle\n";
-    }
-};
-```
-
-// Important Notes
-- virtual on base class enables dynamic dispatch.
-- override catches spelling/signature mistakes.
-- Use virtual destructor in base classes.
-- Most Important Exam Note: always use override in derived classes when possible.
-
-## 11. Smart Pointers
-
-// Short Definition
-Smart pointers manage memory automatically.
-
-// Syntax
-```cpp
-#include <memory>
-
-std::unique_ptr<Student> p1 = std::make_unique<Student>(10);
-std::shared_ptr<Student> p2 = std::make_shared<Student>(10);
-```
-
-// Example
-```cpp
-std::unique_ptr<Student> p1 = std::make_unique<Student>(10);
-// only one owner, auto delete
-
-std::shared_ptr<Student> p2 = std::make_shared<Student>(10);
-// shared ownership
-```
-
-// Important Notes
-- unique_ptr = one owner.
-- shared_ptr = many owners.
-- Prefer smart pointers over raw new/delete.
-- Common mistake: copying a unique_ptr.
-
-## 12. vectors, maps, sets
-
-// Short Definition
-STL containers store and organize data.
-
-// Syntax
-```cpp
-#include <vector>
-#include <map>
-#include <set>
-
-std::vector<int> nums;
-std::map<std::string, int> ages;
-std::set<int> values;
-```
-
-// Example
-```cpp
-std::vector<int> nums = {1, 2, 3};
-nums.push_back(4);          // add element
-
-std::map<std::string, int> ages;
-ages["Ali"] = 20;           // insert or update
-
-std::set<int> values;
-values.insert(5);            // unique values only
-```
-
-// Important Notes
-- vector = ordered list.
-- map = key-value pairs.
-- set = unique sorted values.
-- Common mistake: using [] on map for lookup when key may not exist.
-
-## 13. Exceptions
-
-// Short Definition
-Exceptions handle errors safely.
-
-// Syntax
-```cpp
-try {
-    // code
-}
-catch (const std::exception& e) {
-    // error handling
-}
-```
-
-// Example
-```cpp
-if (age < 0) {
-    throw std::invalid_argument("Age must be positive");
-}
-
-try {
-    setAge(-1);
-}
-catch (const std::invalid_argument& e) {
-    std::cout << e.what();
-}
-```
-
-// Important Notes
-- throw creates the error.
-- catch handles the error.
-- Use const std::exception& for general error handling.
-- Common mistake: throwing errors but never catching them.
-
-## 14. File Handling
-
-// Short Definition
-File handling reads from and writes to files.
-
-// Syntax
-```cpp
-#include <fstream>
-
-std::ofstream out("file.txt");
-std::ifstream in("file.txt");
-```
-
-// Example
-```cpp
-// write
-std::ofstream out("data.txt");
-out << "Hello\n";
-
-// read
-std::ifstream in("data.txt");
-std::string line;
-while (std::getline(in, line)) {
-    std::cout << line << '\n';
-}
-```
-
-// Important Notes
-- ofstream = write file.
-- ifstream = read file.
-- Check if the file opened before using it.
-- Common mistake: forgetting to close or check the file stream.
-
-## 15. Quick Syntax Table
-
-| Topic | Syntax |
-|---|---|
-| Class | `class Name { ... };` |
-| Object | `Name obj;` |
-| Pointer | `Type* ptr = &value;` |
-| Reference | `Type& ref = value;` |
-| Const method | `int get() const;` |
-| Override | `void f() override;` |
-| Vector | `std::vector<int> v;` |
-| Map | `std::map<K, V> m;` |
-| Set | `std::set<T> s;` |
-| Throw | `throw std::runtime_error("msg");` |
-
-## 16. Most Important Exam Notes
-
-- .h = declaration, .cpp = implementation.
-- Use const for read-only functions and variables.
-- Use & for passing large objects without copying.
-- Use * for pointers and -> for pointer member access.
-- Use this-> when member names and parameter names are the same.
-- Use virtual in base classes and override in child classes.
-- Prefer smart pointers instead of raw new/delete.
-- Use vector for ordered data, map for key-value data, set for unique values.
-- Always check file open status when reading/writing files.
-- Common mistakes: missing ClassName::, forgetting const, forgetting public inheritance, and using raw pointers without deleting them.
+This cheat sheet documents the **Standard Template Library (STL) containers & functions**, **pointers (smart & raw)**, **stream operations (ostream, stringstream, CSV I/O)**, and **exceptions** used across the past APT exams. 
 
 ---
+
+## 🗂️ 1. STL Containers & Operations
+
+### 🔹 `std::map<Key, Value>`
+A sorted associative container containing unique key-value pairs.
+
+| Operation | Syntax | Description | Exam Usage & Methods |
+| :--- | :--- | :--- | :--- |
+| **Lookup** | `auto it = map.find(key);` | Finds an element. Returns iterator to key, or `map.end()` if not found. | 🔍 [Bank.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Bank.cpp#L26-L40): `Bank::lookupCustomer` (find customer by ID).<br>🔍 [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L121-L135): `Customer::lookupAccount` / `deleteAccount` (find account by ID).<br>🔍 [Shop.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/Shop.cpp#L30-L47): `Shop::setBasePrice` / `setDiscount` (find product by name). |
+| **Insertion** | `map.insert({key, value});` | Inserts element if key does not exist. | 📥 [Bank.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Bank.cpp#L17): `Bank::createCustomer`.<br>📥 [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L99): `Customer::createAccount`. |
+| **Add / Edit** | `map[key] = value;` | Inserts or overwrites key-value pair. | 📥 [TableBasedAdjuster.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/TableBasedAdjuster.cpp#L4-L8): `TableBasedAdjuster::addBreakpoint` (stores breakpoints).<br>📥 [QuantityDiscount.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/QuantityDiscount.cpp#L10-L13): `QuantityDiscount::addLimit` (stores quantity limit discounts). |
+| **Erasure (Iter)** | `map.erase(iterator);` | Removes element at iterator position. Avoids double search. | 🗑️ [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L156): `Customer::deleteAccount`. |
+| **Bounds** | `map.begin()`, `map.end()` | Iterators pointing to start and end bounds. | 🔄 [TableBasedAdjuster.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/TableBasedAdjuster.cpp#L12-L39): `TableBasedAdjuster::adjust` (accesses `begin()` and `--end()` to find interpolation bounds). |
+
+---
+
+### 🔹 `std::vector<Type>`
+A dynamic contiguous array that grows automatically.
+
+| Operation | Syntax | Description | Exam Usage & Methods |
+| :--- | :--- | :--- | :--- |
+| **Add Element** | `vec.push_back(value);` | Appends element to the end. | 📥 [Bank.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Bank.cpp#L51): `Bank::allCustomers`.<br>📥 [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L113): `Customer::allAccounts`. <br>📥 [ShopDb.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/ShopDb.cpp#L20): `ShopDb::shops` (building raw pointer lookup results). |
+| **Move Add** | `vec.push_back(std::move(ptr));` | Transfers unique pointer ownership into the vector. | 📥 [Topic.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024SoSe_Notebook/myCode/Topic.cpp#L15-L21): `Topic::add` (inserts child items into vector of unique_ptr). |
+| **Iteration** | `for (auto item : vec)` | Range-based iteration. | 🔄 Used widely across exams to traverse observer pointers. |
+
+---
+
+### 🔹 `std::list<Type>`
+A doubly-linked list optimized for rapid insertions/deletions anywhere.
+
+| Operation | Syntax | Description | Exam Usage & Methods |
+| :--- | :--- | :--- | :--- |
+| **Add Element** | `lst.push_back(value);` | Appends element to list. | 📥 [ShoppingList.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/ShoppingList.cpp#L13-L16): `ShoppingList::addItem`. |
+| **Move Add** | `lst.push_back(std::move(ptr));` | Transfers ownership of unique pointers. | 📥 [SensorNetwork.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/SensorNetwork.cpp#L11): `SensorNetwork::add`.<br>📥 [ResistorConnection.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024WiSe_Resistor/myCode/ResistorConnection.cpp#L18): `ResistorConnection::operator+=`. |
+| **Iteration** | `for (auto it = lst.begin(); ...)` | Uses list iterators. List does **not** support random access indexes (`lst[i]`). | 🔄 [ShoppingList.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/ShoppingList.cpp#L18-L22): `ShoppingList::items` (retrieves iterator boundary variables `begin` and `end`).<br>🔄 [Shop.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/Shop.cpp#L54-L67): `Shop::calculatePurchase`. |
+
+---
+
+### 🔹 `std::set<Type>`
+An associative container storing unique elements in sorted order.
+
+| Operation | Syntax | Description | Exam Usage & Methods |
+| :--- | :--- | :--- | :--- |
+| **Clear** | `set.clear();` | Empties the set contents. | 🧹 [Shop.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/Shop.cpp#L51): `Shop::calculatePurchase` (resets the `notAvailable` items container). |
+| **Insert** | `set.insert(value);` | Inserts element if not present. | 📥 [Shop.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/Shop.cpp#L65): `Shop::calculatePurchase` (tracks missing item pointer: `notAvailable.insert(&(*it))`). |
+| **Find/Erase** | `set.find()`, `set.erase()` | Searching and deleting. | 🔍 [tests.cpp (ShoppingList)](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/tests.cpp#L103-L114): `shopDbTests` (verifies matching shop names). |
+| **Count** | `set.count(value);` | Returns `1` if element is found, `0` otherwise. | 🔢 [tests.cpp (Bank)](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/tests.cpp#L194-L205): `accountTests` (checks set contains specific generated CD accounts). |
+
+---
+
+## ⚡ 2. Memory & Pointer Structures
+
+Memory management in exams relies on separating **ownership** (managed by smart pointers) from **observation** (managed by raw pointers).
+
+### 🟢 `std::unique_ptr<T>`
+Exclusive ownership. The resource is freed automatically when the pointer goes out of scope. Cannot be copied, only moved.
+
+* **Usage in Exams**:
+  * Storing polymorphically owned children inside class member directories.
+    * [Bank.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Bank.h#L28): `std::map<std::string, std::unique_ptr<Customer>> customers;`
+    * [Customer.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.h#L29): `std::map<std::string, std::unique_ptr<Account>> accounts;`
+    * [SensorNetwork.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/SensorNetwork.h#L13): `std::list<std::unique_ptr<Sensor>> sensors;`
+    * [Topic.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024SoSe_Notebook/myCode/Topic.h#L10): `std::vector<std::unique_ptr<Item>> items;`
+    * [Resistance.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024WiSe_Resistor/myCode/Resistance.h#L111): `typedef std::unique_ptr<Resistance> ResistancePtr;`
+* **Common Code Snippet Patterns**:
+  * **Creation**: `auto account = std::make_unique<CurrentAccount>(this);`
+  * **Ownership Transfer**: `customers.insert({id, std::move(customer)});` or `items.push_back(std::move(item));`
+  * **Observer Extraction**: `.get()` fetches the raw pointer without transferring ownership.
+    * [Bank.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Bank.cpp#L14): `Customer *rawPtr = customer.get();` (returns raw observer pointer to user).
+
+### 🔵 `std::shared_ptr<T>`
+Shared ownership. Reference-counted pointer. Cleans up memory when the last owner is destroyed.
+
+* **Usage in Exams**:
+  * Shared strategies or lookup instances across multiple entities.
+    * [Sensor.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/Sensor.h#L33): `std::shared_ptr<Adjuster> adjuster;` (allows multiple sensors to point to the same calibration logic instance).
+    * [NullAdjuster.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/NullAdjuster.h#L15): `static std::shared_ptr<Adjuster> sharedInstance;` (Singleton adjuster).
+    * [Product.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/Product.h#L28): `std::shared_ptr<Discount> discount;` (shared discount rules).
+
+### 🔴 Raw Pointers (`T*`)
+Observer pointers. They do **not** own the memory. Used to query, link, or invoke functions on objects owned elsewhere.
+
+* **Usage in Exams**:
+  * Database query lookups and vector results:
+    * `Customer* Bank::lookupCustomer(std::string id) const` returns `it->second.get();`
+    * `std::vector<Customer*> Bank::allCustomers() const` returns raw pointers collected from a map of unique pointers.
+  * Parent pointers:
+    * `virtual void writeCsv(std::ostream& out, const Item* parent)` in `Notebook` exam.
+
+---
+
+## 🖨️ 3. Stream & I/O Operations
+
+### 🔹 Overloading the Stream Insertion Operator (`<<`)
+Must be a global function. Allows passing objects directly to printing streams (like `std::cout` or file writing).
+
+* **Syntax**:
+  ```cpp
+  std::ostream& operator<<(std::ostream& out, const ClassName& obj);
+  ```
+* **Exam Implementations**:
+  * 🏦 **Bank**: Prints formatted customer information.
+    * [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L159-L178):
+      ```cpp
+      std::ostream& operator<<(std::ostream& out, const Customer& customer) {
+          out << customer.getId() << ": " << customer.getLastName() << ", " 
+              << customer.getFirstName() << " (" << customer.getDateOfBirth().day() << "." ... << ")";
+          return out;
+      }
+      ```
+  * ⚡ **Resistor**: Prints general circuit info.
+    * [Resistance.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024WiSe_Resistor/myCode/Resistance.cpp#L25-L28):
+      ```cpp
+      std::ostream& operator<<(std::ostream& out, Resistance& resistor) {
+          out << resistor.toString();
+          return out;
+      }
+      ```
+
+### 🔹 Testing with `std::stringstream`
+Acts as a stream in memory. Used in tests to verify custom string formatting operations without printing to console.
+
+* **Exam Usage**:
+  * [tests.cpp (Bank)](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/tests.cpp#L97-L103):
+    ```cpp
+    stringstream ss;
+    ss << c;
+    assertTrue(ss.str() == "0000000001: Angel, Alice, (01.01.1991)", "Operator Overload Failed");
+    ```
+
+### 🔹 CSV Deserialization (`std::getline`)
+Used to parse values separated by delimiters (like `;` or `,`).
+
+* **General CSV Formatting Pattern**:
+  ```cpp
+  std::getline(stream, stringVariable, ';'); // reads until delimiter ';'
+  std::getline(stream, stringVariable, '\n'); // reads until end of line
+  ```
+* **Exam Usage**:
+  * [ResistanceReader.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024WiSe_Resistor/myCode/ResistanceReader.cpp#L11): `getline(in, line);` reads lines from file one-by-one.
+  * [WeeklyCourse.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Lab_3_StudentDb/myCode/WeeklyCourse.cpp#L70-L74): Delimited parsing of course metadata.
+
+---
+
+## ⚠️ 4. Error Handling & Exceptions
+
+Throw exceptions for illegal operations (like bad lookup keys or invalid parameters) using standard header `<stdexcept>`.
+
+| Exception Type | Syntax | Scenario | Exam Usage & Methods |
+| :--- | :--- | :--- | :--- |
+| **`std::invalid_argument`** | `throw std::invalid_argument("msg");` | Invalid parameters or failed directory searches. | 🚫 [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L134): `Customer::lookupAccount` / `deleteAccount` (account not found).<br>🚫 [Account.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Account.cpp#L52): `Account::accountType` (invalid first digit).<br>🚫 [Shop.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023WiSe_ShoppingList/myCode/Shop.cpp#L33): `Shop::setBasePrice` (product not sold at this shop). |
+| **`std::logic_error`** | `throw std::logic_error("msg");` | Valid parameters, but violates logical rules in current state. | 🚫 [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L152): `Customer::deleteAccount` (throwing error if balance is not 0). |
+| **Custom Exception** | `class DerivedEx : public std::invalid_argument` | Inheriting standard exceptions to pass contextual arguments. | 🚫 [DuplicateSensorName.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/DuplicateSensorName.cpp#L3): Inherits `std::invalid_argument` and is thrown in `SensorNetwork::add`. |
+
+---
+
+## 🎛️ 5. Key Helper & Mathematical Functions
+
+* **`std::to_string(num)`**: Converts an integer/float value into a `std::string`.
+  * Used in [Customer.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2022WiSe_Bank/myCode/Customer.cpp#L22) to convert customer number for padding logic.
+* **`std::stol(str)`**: Converts a string containing digits into a `long` value.
+  * Hinted in [Note.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024SoSe_Notebook/myCode/Note.h#L71) and [Topic.h](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2024SoSe_Notebook/myCode/Topic.h#L71) to parse IDs during CSV load processes.
+* **`std::next(it)`**: Returns the iterator advanced by 1 step.
+  * Used in [TableBasedAdjuster.cpp](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/TableBasedAdjuster.cpp#L29) to set up two adjacent iterators for linear interpolation: `auto k_n1 = std::next(k_n);`.
+* **`fabs(val)`**: Returns the absolute value of floating point calculations.
+  * Used in [tests.cpp (SensorAdjustor)](file:///e:/Abhishek_Git/Cpp_Projects/Exam-2023SoSe_SensorAdjustor/myCode/tests.cpp#L84) to compare float totals safely under precision tolerances: `fabs(adjusted - expected) < 0.0001`.

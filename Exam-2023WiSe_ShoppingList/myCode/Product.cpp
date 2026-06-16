@@ -29,7 +29,12 @@ Product& Product::setDiscount(std::shared_ptr<Discount> discount) {
 }
 
 float Product::priceFor(float quantity) const {
-	// TODO (replace "dummy return")
-	return 0;
+	// Compute the base price for the requested quantity
+	float priceItem = quantity * basePrice;
+	// Determine the applicable discount factor
+	float discountItem = discount->discountFor(quantity);
+
+	// Apply the discount factor to the base price
+	return priceItem * (1 - discountItem);
 }
 

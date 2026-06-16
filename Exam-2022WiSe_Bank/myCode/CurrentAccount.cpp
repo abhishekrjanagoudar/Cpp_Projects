@@ -1,1 +1,10 @@
 #include "CurrentAccount.h"
+
+CurrentAccount::CurrentAccount(Customer *customer) : Account(customer , Bank::Current) {
+}
+
+Poco::JSON::Object& CurrentAccount::setAccountType(
+		Poco::JSON::Object &obj) const {
+	obj.set("accountType" , "Current Account");
+	return obj;
+}

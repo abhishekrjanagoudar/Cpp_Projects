@@ -8,8 +8,7 @@ using namespace std;
 
 // Main program
 int main () {
-    // TODO: Fill in your data here
-	cout << "Matr.-Nb. ......, Name ......., Computer: ..." << endl << endl;
+    cout << "Student Name: ............, Matrikel-Nb: ......." << endl << endl;
 
     extern void allTests();
     allTests();

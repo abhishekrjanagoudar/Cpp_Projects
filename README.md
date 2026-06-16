@@ -13,24 +13,25 @@
 This repository contains previous-year exam practice sets for the course
 Advanced Programming Techniques. 🎓
 
-Each exam folder includes:
-- 🧾 an incomplete C++ codebase
-- 🧪 a `tests.cpp` file describing required behavior
+Each folder generally includes:
+- 🧾 an incomplete C++ codebase or a starter skeleton
+- 🧪 a `tests.cpp` file describing required behavior (in exams)
 - 🛠️ starter `main` files and helpers
-- 📄 (sometimes) generated documentation or example outputs
+- 📄 (sometimes) generated documentation, assignment instructions, or example outputs
 
-The goal is to practice reading specs from tests, completing class designs,
-and implementing object-oriented logic under exam-style constraints. 💪
+The goal is to practice reading specs, completing class designs,
+and implementing object-oriented logic. 💪
 
 ## Repository Overview 🗂️✨
 
-| Folder | Theme | What you practice |
+### Past Exams 📑
+| Folder | What you practice | Class Marks Breakdown |
 |---|---|---|
-| Exam-2022WiSe_Bank 🏦 | Banking domain model | OOP basics, associations, account/customer handling, exceptions, JSON output |
-| Exam-2023SoSe_SensorAdjustor 🌡️ | Sensor calibration network | Inheritance/polymorphism, adjuster strategies, validation with custom exceptions |
-| Exam-2023WiSe_ShoppingList 🛒 | Shopping and discounts | Data modeling, discount rules, database-like lookup, evaluation logic |
-| Exam-2024SoSe_Notebook 📓 | Notes/topics hierarchy | Composite-style structures, CSV serialization, tree-like ownership |
-| Exam-2024WiSe_Resistor ⚡ | Electrical resistor networks | Recursive/composite calculations, tolerances, file read/write parsing |
+| Exam-2022WiSe_Bank 🏦 | OOP basics, associations, account/customer handling, exceptions, JSON output | N/A |
+| Exam-2023SoSe_SensorAdjustor 🌡️ | Inheritance/polymorphism, adjuster strategies, validation with custom exceptions | DuplicateSensorName: 2 marks for .cpp , 0 marks for tests: Total:2<br>LinearAdjuster: 4 marks for .cpp , 0 marks for tests: Total:4<br>Sensor: 4 marks for .cpp , 12 marks for tests: Total:16<br>SensorNetwork: 11 marks for .cpp , 16 marks for tests: Total:27<br>TableBasedAdjuster: 18 marks for .cpp , 0 marks for tests: Total:18<br>TestSensor: 5 marks for .cpp , 0 marks for tests: Total:5<br>Adjusters: 0 marks for .cpp , 12 marks for tests: Total:12<br>-------------------<br>Total Marks: 84 |
+| Exam-2023WiSe_ShoppingList 🛒 | Data modeling, discount rules, database-like lookup, evaluation logic | Product: 2 marks for .cpp , 0 marks for tests: Total:2<br>QuantityDiscount: 6 marks for .cpp , 8 marks for tests: Total:14<br>Shop: 22 marks for .cpp , 5 marks for tests: Total:27<br>ShopDb: 9 marks for .cpp , 7 marks for tests: Total:16<br>ShoppingList: 4 marks for .cpp , 12 marks for tests: Total:16<br>FixedDiscount: 0 marks for .cpp , 6 marks for tests: Total:6<br>-------------------<br>Total Marks: 81 |
+| Exam-2024SoSe_Notebook 📓 | Composite-style structures, CSV serialization, tree-like ownership | Item: 6 marks for .cpp , 0 marks for tests: Total:6<br>Note: 17 marks for .cpp , 6 marks for tests: Total:23<br>Notebook: 18 marks for .cpp , 10 marks for tests: Total:28<br>Topic: 25 marks for .cpp , 15 marks for tests: Total:40<br>-------------------<br>Total Marks: 97 |
+| Exam-2024WiSe_Resistor ⚡ | Recursive/composite calculations, tolerances, file read/write parsing | ParallelResistorConnection: 10 marks for .cpp , 10 marks for tests: Total:20<br>Resistance: 11 marks for .cpp , 0 marks for tests: Total:11<br>ResistanceReader: 17 marks for .cpp , 8 marks for tests: Total:25<br>Resistor: 9 marks for .cpp , 5 marks for tests: Total:14<br>ResistorConnection: 17 marks for .cpp , 0 marks for tests: Total:17<br>SerialResistorConnection: 9 marks for .cpp , 8 marks for tests: Total:17<br>-------------------<br>Total Marks: 104 |
 
 ## Recommended Study Order (Easiest -> Hardest) 🎯🔢
 
@@ -44,50 +45,3 @@ in the existing starter code.
 | 3 | Exam-2023WiSe_ShoppingList 🥉 | More classes and richer discount/business-rule combinations |
 | 4 | Exam-2024WiSe_Resistor 🔋 | Composite network math plus persistence/parsing tasks |
 | 5 | Exam-2024SoSe_Notebook 📚 | Highest TODO density and deeper hierarchy + CSV reconstruction |
-
-## Quick Start Workflow 🚀✨
-
-1. 🔎 Pick the next question bank from the ordered list above.
-2. 📖 Read `myCode/tests.cpp` first to understand expected behavior.
-3. 🧭 Inspect related headers before implementation.
-4. 🛠️ Implement incrementally and run tests after each logical unit.
-5. 📝 Keep notes of recurring patterns (exceptions, ownership, serialization).
-
-Tip: Use small commits and run the tests often — fast feedback = faster learning! 💡
-
-## Practice Tracker ✅🎯
-
-Use this checklist to track progress.
-
-### Exam-2022WiSe_Bank 🏦
-- [ ] 🧩 Understand class relationships (Bank, Customer, Account types)
-- [ ] ✍️ Complete missing test-driven behaviors
-- [ ] 🔐 Validate exception and JSON-related outputs
-
-### Exam-2023SoSe_SensorAdjustor 🌡️
-- [ ] ⚙️ Implement/verify adjuster behavior (null, linear, table-based)
-- [ ] 📊 Validate sensor reading adjustments
-- [ ] 🚫 Test duplicate sensor handling in network
-
-### Exam-2023WiSe_ShoppingList 🛒
-- [ ] 🧾 Complete item/list/shop/shop-db operations
-- [ ] 💸 Verify fixed/linear/quantity discount logic
-- [ ] 🧮 Complete purchase evaluation scenarios
-
-### Exam-2024WiSe_Resistor ⚡
-- [ ] 🔍 Verify resistor nominal/min/max computations
-- [ ] 🔗 Complete serial/parallel network calculations
-- [ ] 💾 Complete network read/write verification
-
-### Exam-2024SoSe_Notebook 📓
-- [ ] 🗂️ Complete note/topic/notebook base behavior
-- [ ] 🔁 Verify parent-child item handling
-- [ ] 📂 Complete CSV save/load round-trip tests
-
-## Notes 🧠💬
-
-- This repository is intended for exam practice, not production software. 🧪
-- Prefer solving from tests first (red -> green -> refactor style). 🔴🟢🔧
-- Keep solutions simple and readable before optimizing. ✨
-
-Happy practicing — and may your tests pass on the first try! 🥳✅
