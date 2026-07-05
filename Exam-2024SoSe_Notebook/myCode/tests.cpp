@@ -78,21 +78,14 @@ void noteTests() {
  * Basic tests for Topic (15 points)
  */
 void topicTests() {
-
-    /*
+	/*
 	 * Create an instance of Topic with title "Test Topic".
 	 * Assert that getting the title returns the value that was set
 	 * and that the topic has no items.
 	 */
-    Topic topic("Test Topic");
-
-    // Verify title access
-    assertTrue(topic.getTitle() == "Test Topic",
-            "ERROR: Topic title");
-
-    // Ensure freshly instantiated topic correctly initializes with no nested structures
-    assertTrue(topic.getItems().size() == 0,
-            "ERROR: Topic should be empty");
+	Topic topic("Test Topic");
+	assertTrue(topic.getTitle() == "Test Topic", "ERROR: Topic title");
+	assertTrue(topic.getItems().empty(), "ERROR: Topic items empty");
 
     /*
      * Assert that invoking writeCsv() on the topic with no
@@ -104,19 +97,10 @@ void topicTests() {
      * the assertion. (Hint: use the topic's getId() method and
      * std::to_string to evaluate the string to compare with.)
      */
-    stringstream ss;
-
-    // Trigger serialization to analyze structural output
-    topic.writeCsv(ss, nullptr);
-
-    string expectedTopic =
-            "Topic;" +
-            to_string(topic.getId()) +
-            ";0;Test Topic;\n";
-
-    // Validate the resultant root object's CSV schema footprint
-    assertTrue(ss.str() == expectedTopic,
-            "ERROR: Topic CSV");
+	stringstream ss;
+	topic.writeCsv(ss, nullptr);
+	string expected = "Topic;" + to_string(topic.getId()) + ";0;Test Topic;\n";
+	assertTrue(ss.str() == expected, "ERROR: Topic writeCsv");
 
     /*
      * Add an instance of Note to the topic (copy the code for
@@ -124,23 +108,13 @@ void topicTests() {
      * the topic now has exactly one item. Also assert that this
      * item is the one that was added.
      */
-    auto note =
-        unique_ptr<Item>(
-            (new Note("Test Note"))
-            ->setContent("Lorem ipsum"));
+	Note* rawNote = new Note("Test Note");
+	rawNote->setContent("Lorem ipsum");
+	std::unique_ptr<Item> note(rawNote);
+	topic.add(note);
 
-    Item* addedNote = note.get();
-
-    // Lodge sample note into the parent topic container
-    topic.add(std::move(note));
-
-    // Confirm addition modified the parent structural count
-    assertTrue(topic.getItems().size() == 1,
-            "ERROR: Topic item count");
-
-    // Check pointer consistency after relocation semantics applied
-    assertTrue(topic.getItems()[0] == addedNote,
-            "ERROR: Wrong item stored");
+	assertTrue(topic.getItems().size() == 1, "ERROR: Topic items size");
+	assertTrue(topic.getItems()[0] == rawNote, "ERROR: Topic item match");
 
     /*
      * Assert that invoking writeCsv() on the note produces
@@ -152,21 +126,10 @@ void topicTests() {
      * when invoking the assertion. (Hint: again, build the
      * string to compare with at run-time.)
      */
-    stringstream ss2;
-
-    // Instruct nested child to produce its own row accounting for parent reference
-    addedNote->writeCsv(ss2, &topic);
-
-    string expectedNote =
-            "Note;" +
-            to_string(addedNote->getId()) +
-            ";" +
-            to_string(topic.getId()) +
-            ";Test Note;Lorem ipsum\n";
-
-    // Ensure correct relationship mapped correctly through ID references
-    assertTrue(ss2.str() == expectedNote,
-            "ERROR: Note CSV");
+	stringstream ss2;
+	rawNote->writeCsv(ss2, &topic);
+	string expected2 = "Note;" + to_string(rawNote->getId()) + ";" + to_string(topic.getId()) + ";Test Note;Lorem ipsum\n";
+	assertTrue(ss2.str() == expected2, "ERROR: Note writeCsv in Topic");
 }
 /**
  * Basic tests for Notebook (10 points)
